@@ -1,0 +1,40 @@
+package com.leo.elib.config;
+//
+//import com.leo.elib.filter.ATFilter;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+//import org.springframework.security.config.http.SessionCreationPolicy;
+//import org.springframework.security.web.SecurityFilterChain;
+//import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+//
+//@Configuration
+//@EnableWebSecurity
+//public class WebSecurityConfig {
+//
+//    // 自定义 JWT 验证过滤器
+//    @Bean
+//    public ATFilter atFilter() {
+//        return new ATFilter();
+//    }
+//
+//    // 配置 SecurityFilterChain
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//            // 禁用 CSRF
+//            .csrf(AbstractHttpConfigurer::disable)
+//            // 禁用 Session
+//            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//            // 授权配置
+//            .authorizeHttpRequests(auth -> auth
+//            // 登录、注册接口允许访问
+//            .requestMatchers("/user/login", "/user/register").permitAll()
+//            // 其他请求需要认证
+//            .anyRequest().authenticated()
+//        ).addFilterAfter(atFilter(), BasicAuthenticationFilter.class);
+//        return http.build();
+//    }
+//}

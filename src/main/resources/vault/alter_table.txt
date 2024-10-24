@@ -1,0 +1,117 @@
+package com.leo.elib;
+//
+//import org.springframework.boot.SpringApplication;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
+//
+//@SpringBootApplication
+//public class ElibApplication {
+//    public static void main(String[] args) {
+//        SpringApplication.run(ElibApplication.class, args);
+//    }
+//
+//}
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class ElibApplication {
+
+    // MySQL数据库连接信息
+    private static final String URL = "jdbc:mysql://localhost:3306/lib_manage"; // 修改为你的数据库URL
+    private static final String USER = "leo";  // 修改为你的数据库用户名
+    private static final String PASSWORD = "lou..200499";  // 修改为你的数据库密码
+
+    public static void main(String[] args) {
+        try {
+            // 1. 连接数据库
+            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("连接成功");
+
+            // 2. 修改表结构，增加 category_id 和 subcategory_id 列
+            // alterTableStructure(conn);
+
+            // 3. 生成 category_id 和 subcategory_id 映射，并存储到映射表
+            generateCategoryMappings(conn);
+
+            // 4. 完成后，关闭连接
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 修改表结构，添加 category_id 和 subcategory_id 列
+    private static void alterTableStructure(Connection conn) throws Exception {
+        String alterSQL = "ALTER TABLE book_info "
+                + "ADD COLUMN category_id MEDIUMINT UNSIGNED NOT NULL, "
+                + "ADD COLUMN subcategory_id MEDIUMINT UNSIGNED NOT NULL";
+        Statement stmt = conn.createStatement();
+        stmt.execute(alterSQL);
+        System.out.println("表结构已更新，增加了 category_id 和 subcategory_id 列");
+    }
+
+    // 生成 category 和 subcategory 的映射，并更新表和插入映射表
+    private static void generateCategoryMappings(Connection conn) throws Exception {
+        // 1. 查询所有的 unique category
+        String categorySQL = "SELECT DISTINCT category FROM book_info ORDER BY category";
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(categorySQL);
+
+        int categoryBase = 1000;  // Category 从 1000 开始
+        while (rs.next()) {
+            String category = rs.getString("category");
+            int categoryId = categoryBase;  // 当前 category 的映射值
+
+            // 2. 将 category 映射存入 category_map 表
+            String insertCategoryMapSQL = "INSERT INTO category_map (category_id, category) VALUES (?, ?)";
+            PreparedStatement insertCategoryMapStmt = conn.prepareStatement(insertCategoryMapSQL);
+            insertCategoryMapStmt.setInt(1, categoryId);
+            insertCategoryMapStmt.setString(2, category);
+            insertCategoryMapStmt.executeUpdate();
+
+            // 3. 更新主表的 category_id
+            String updateCategorySQL = "UPDATE book_info SET category_id = ? WHERE category = ?";
+            PreparedStatement updateCategoryStmt = conn.prepareStatement(updateCategorySQL);
+            updateCategoryStmt.setInt(1, categoryId);
+            updateCategoryStmt.setString(2, category);
+            updateCategoryStmt.executeUpdate();
+
+            // 4. 获取所有的 subcategory，并在当前 category 基础上递增映射
+            String subcategorySQL = "SELECT DISTINCT subcategory FROM book_info WHERE category = ? ORDER BY subcategory";
+            PreparedStatement subcategoryStmt = conn.prepareStatement(subcategorySQL);
+            subcategoryStmt.setString(1, category);
+            ResultSet subcategoryRs = subcategoryStmt.executeQuery();
+
+            int subcategoryBase = categoryId + 1;  // subcategory 从 category_id + 1 开始
+            while (subcategoryRs.next()) {
+                String subcategory = subcategoryRs.getString("subcategory");
+                int subcategoryId = subcategoryBase;
+
+                // 5. 将 subcategory 映射存入 subcategory_map 表
+                String insertSubcategoryMapSQL = "INSERT INTO subcategory_map (subcategory_id, subcategory, category_id) VALUES (?, ?, ?)";
+                PreparedStatement insertSubcategoryMapStmt = conn.prepareStatement(insertSubcategoryMapSQL);
+                insertSubcategoryMapStmt.setInt(1, subcategoryId);
+                insertSubcategoryMapStmt.setString(2, subcategory);
+                insertSubcategoryMapStmt.setInt(3, categoryId);
+                insertSubcategoryMapStmt.executeUpdate();
+
+                // 6. 更新主表的 subcategory_id
+                String updateSubcategorySQL = "UPDATE book_info SET subcategory_id = ? WHERE subcategory = ? AND category = ?";
+                PreparedStatement updateSubcategoryStmt = conn.prepareStatement(updateSubcategorySQL);
+                updateSubcategoryStmt.setInt(1, subcategoryId);
+                updateSubcategoryStmt.setString(2, subcategory);
+                updateSubcategoryStmt.setString(3, category);
+                updateSubcategoryStmt.executeUpdate();
+
+                ++subcategoryBase;  // 下一个 subcategory 的映射值递增
+            }
+
+            categoryBase += 1000;  // 下一个 category 的映射值递增
+        }
+
+        System.out.println("所有 category 和 subcategory 的映射已生成并更新");
+    }
+}
