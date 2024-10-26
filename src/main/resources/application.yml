@@ -30,8 +30,8 @@ container:
 mybatis:
   type-aliases-package: com.leo.elib.dto.dao
   mapper-locations: classpath:mapper/*.xml
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 jwt:
   at_secret: secretForElibAT

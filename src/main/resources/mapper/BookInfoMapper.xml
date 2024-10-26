@@ -49,8 +49,36 @@
         where bi.isbn = #{isbn}
     </select>
 
+    <select id="getBookInfoList" resultMap="BookDaoForListMap" parameterType="java.util.List">
+        select bi.isbn,
+        bi.title,
+        bi.original_title,
+        bi.publisher_id,
+        p.publisher_name,
+        bi.pub_date,
+        bi.word_count,
+        bi.lang_id,
+        bi.cover_m_url,
+        bi.rating,
+        case when bi.ebook_url is null then false else true end as has_ebook,
+        bi.category_id,
+        bi.subcategory_id,
+        a.author_id,
+        a.name as author_name,
+        btc.tag_id
+        from book_info bi
+        inner join publisher p on bi.publisher_id = p.publisher_id
+        inner join book_author ba on bi.isbn = ba.isbn
+        inner join author a on ba.author_id = a.author_id
+        left  join book_tag_cor btc on bi.isbn = btc.isbn
+        where bi.isbn IN
+        <foreach item="isbn" collection="bookIsbns" open="(" separator="," close=")">
+            #{isbn}
+        </foreach>
+    </select>
 
-<!--    <resultMap id ="BookDaoForListMap" type="BookDaoForList" autoMapping="true">-->
+
+    <!--    <resultMap id ="BookDaoForListMap" type="BookDaoForList" autoMapping="true">-->
 <!--        <result column="isbn" property="isbn"/>-->
 <!--        <result column="original_title" property="originalTitle"/>-->
 <!--        <result column="publisher_id" property="publisherId"/>-->

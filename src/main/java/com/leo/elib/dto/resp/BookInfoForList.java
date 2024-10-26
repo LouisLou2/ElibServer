@@ -47,43 +47,72 @@ public class BookInfoForList {
     @JsonProperty("tag_names")
     private List<String> tagNames;
     
-    public BookInfoForList(String isbn, String title, String originalTitle, int publisherId, String publisherName, Date pubDate, short wordCount, short langId, String coverMUrl, short rating, boolean hasEbook, int category1, int category2, List<Integer> authorIds, List<String> authorNames, List<Short> tagIds) {
-        this.isbn = isbn;
-        this.title = title;
-        this.originalTitle = originalTitle;
-        this.publisherId = publisherId;
-        this.publisherName = publisherName;
-        this.pubDate = pubDate;
-        this.wordCount = wordCount;
-        this.langId = langId;
-        this.coverMUrl = coverMUrl;
-        this.rating = rating;
-        this.hasEbook = hasEbook;
-        this.category1 = category1;
-        this.category2 = category2;
-        this.authorIds = authorIds;
-        this.authorNames = authorNames;
-        this.tagIds = tagIds;
+    public BookInfoForList(
+      BookDaoForList dao,
+       String langName, 
+       String category1Name, 
+       String category2Name, 
+       List<String> tagNames
+    ){
+        this.isbn = dao.getIsbn();
+        this.title = dao.getTitle();
+        this.originalTitle = dao.getOriginalTitle();
+        this.publisherId = dao.getPublisherId();
+        this.publisherName = dao.getPublisherName();
+        this.pubDate = dao.getPubDate();
+        this.wordCount = dao.getWordCount();
+        this.langId = dao.getLangId();
+        this.langName = langName;
+        this.coverMUrl = dao.getCoverMUrl();
+        this.rating = dao.getRating();
+        this.hasEbook = dao.isHasEbook();
+        this.category1 = dao.getCategory1();
+        this.category1Name = category1Name;
+        this.category2 = dao.getCategory2();
+        this.category2Name = category2Name;
+        this.authorIds = dao.getAuthorIds();
+        this.authorNames = dao.getAuthorNames();
+        this.tagIds = dao.getTagIds();
+        this.tagNames = tagNames;
     }
     
-    public static BookInfoForList fromBookDaoForList(BookDaoForList dao) {
-        return new BookInfoForList(
-          dao.getIsbn(),
-          dao.getTitle(), 
-          dao.getOriginalTitle(), 
-          dao.getPublisherId(), 
-          dao.getPublisherName(), 
-          dao.getPubDate(), 
-          dao.getWordCount(), 
-          dao.getLangId(), 
-          dao.getCoverMUrl(), 
-          dao.getRating(), 
-          dao.isHasEbook(), 
-          dao.getCategory1(), 
-          dao.getCategory2(), 
-          dao.getAuthorIds(), 
-          dao.getAuthorNames(), 
-          dao.getTagIds()
-        );
-    }
+    //public BookInfoForList(String isbn, String title, String originalTitle, int publisherId, String publisherName, Date pubDate, short wordCount, short langId, String coverMUrl, short rating, boolean hasEbook, int category1, int category2, List<Integer> authorIds, List<String> authorNames, List<Short> tagIds) {
+    //    this.isbn = isbn;
+    //    this.title = title;
+    //    this.originalTitle = originalTitle;
+    //    this.publisherId = publisherId;
+    //    this.publisherName = publisherName;
+    //    this.pubDate = pubDate;
+    //    this.wordCount = wordCount;
+    //    this.langId = langId;
+    //    this.coverMUrl = coverMUrl;
+    //    this.rating = rating;
+    //    this.hasEbook = hasEbook;
+    //    this.category1 = category1;
+    //    this.category2 = category2;
+    //    this.authorIds = authorIds;
+    //    this.authorNames = authorNames;
+    //    this.tagIds = tagIds;
+    //}
+    
+    //public static BookInfoForList fromBookDaoForList(BookDaoForList dao) {
+    //    return new BookInfoForList(
+    //      dao.getIsbn(),
+    //      dao.getTitle(), 
+    //      dao.getOriginalTitle(), 
+    //      dao.getPublisherId(), 
+    //      dao.getPublisherName(), 
+    //      dao.getPubDate(), 
+    //      dao.getWordCount(), 
+    //      dao.getLangId(), 
+    //      dao.getCoverMUrl(), 
+    //      dao.getRating(), 
+    //      dao.isHasEbook(), 
+    //      dao.getCategory1(), 
+    //      dao.getCategory2(), 
+    //      dao.getAuthorIds(), 
+    //      dao.getAuthorNames(), 
+    //      dao.getTagIds()
+    //    );
+    //}
 }
