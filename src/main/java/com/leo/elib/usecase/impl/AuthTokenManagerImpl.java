@@ -1,11 +1,11 @@
 package com.leo.elib.usecase.impl;
 
-import com.leo.elib.comp_entity.Expected;
-import com.leo.elib.comp_entity.TokenInfo;
-import com.leo.elib.comp_entity.TokenPair;
+import com.leo.elib.comp_struct.Expected;
+import com.leo.elib.comp_struct.TokenInfo;
+import com.leo.elib.comp_struct.TokenPair;
 import com.leo.elib.constant.DeviceTypeEnum;
 import com.leo.elib.constant.TokenRes;
-import com.leo.elib.service.inter.JwtCache;
+import com.leo.elib.service.specific.inter.JwtCache;
 import com.leo.elib.usecase.inter.AuthTokenManager;
 import com.leo.elib.service.inter.JwtTokenEndecoder;
 import jakarta.annotation.Resource;

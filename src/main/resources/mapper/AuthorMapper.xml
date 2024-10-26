@@ -3,7 +3,6 @@
 <mapper namespace="com.leo.elib.mapper.AuthorMapper">
     <resultMap id="AuthorMap" type="Author">
         <id column="author_id" property="id"/>
-        <result column="name" property="name"/>
     </resultMap>
 
     <select id="getAuthorById" resultMap="AuthorMap">

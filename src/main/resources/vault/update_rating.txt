@@ -1,0 +1,53 @@
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Random;
+
+public class ElibApplication {
+
+    public static void main(String[] args) {
+        // 数据库连接配置
+        String jdbcUrl = "jdbc:mysql://localhost:3306/lib_manage";
+        String username = "leo";
+        String password = "lou..200499";
+
+        // 评分生成配置
+        double mean = 75.0;
+        double stdDev = 10.0;
+        Random random = new Random();
+
+        // SQL查询和更新语句
+        String selectSQL = "SELECT isbn FROM book_info";
+        String updateSQL = "UPDATE book_info SET rating = ? WHERE isbn = ?";
+
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+             PreparedStatement selectStatement = connection.prepareStatement(selectSQL);
+             PreparedStatement updateStatement = connection.prepareStatement(updateSQL)) {
+
+            // 查询所有ISBN
+            ResultSet resultSet = selectStatement.executeQuery();
+            while (resultSet.next()) {
+                String isbn = resultSet.getString("isbn");
+
+                // 生成评分
+                double rating = mean + stdDev * random.nextGaussian();
+                rating = Math.max(1, Math.min(100, rating)); // 将评分限制在0到100之间
+
+                // 设置SQL更新参数
+                updateStatement.setDouble(1, rating); // 设置评分
+                updateStatement.setString(2, isbn);   // 设置ISBN
+
+                // 执行更新
+                updateStatement.executeUpdate();
+
+                System.out.printf("Record ISBN: %s, Rating: %.2f updated successfully%n", isbn, rating);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,6 +1,6 @@
 package com.leo.elib.mapper;
 
-import com.leo.elib.entity.dao.Author;
+import com.leo.elib.dto.dao.Author;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

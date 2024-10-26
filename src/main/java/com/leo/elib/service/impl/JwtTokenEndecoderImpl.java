@@ -3,7 +3,7 @@ package com.leo.elib.service.impl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.leo.elib.comp_entity.TokenInfo;
+import com.leo.elib.comp_struct.TokenInfo;
 import com.leo.elib.constant.DeviceTypeEnum;
 import com.leo.elib.service.inter.JwtTokenEndecoder;
 import jakarta.annotation.PostConstruct;

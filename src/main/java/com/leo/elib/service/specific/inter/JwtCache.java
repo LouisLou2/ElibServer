@@ -1,4 +1,4 @@
-package com.leo.elib.service.inter;
+package com.leo.elib.service.specific.inter;
 
 
 import com.leo.elib.constant.DeviceTypeEnum;
@@ -9,7 +9,7 @@ public interface JwtCache {
     * @param tokenType: true for access token, false for refresh token
     * @param userId: user id
     * @param deviceType: device type
-    * @return version of token, null if not found，但是照逻辑应该不会返回null，因为一定会有一个版本号
+        * @return version of token, null if not found，但是照逻辑应该不会返回null，因为一定会有一个版本号
     * */
     Integer getVersion(boolean tokenType, int userId, DeviceTypeEnum deviceType);
     /*

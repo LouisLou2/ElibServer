@@ -4,8 +4,8 @@ package com.leo.elib.filter;
 // This filter is used to check the validity of the access token.
 // If the access token is invalid, the request will be rejected.
 
-import com.leo.elib.comp_entity.Expected;
-import com.leo.elib.comp_entity.TokenInfo;
+import com.leo.elib.comp_struct.Expected;
+import com.leo.elib.comp_struct.TokenInfo;
 import com.leo.elib.constant.TokenRes;
 import com.leo.elib.service.inter.PathManager;
 import com.leo.elib.usecase.inter.AuthTokenManager;

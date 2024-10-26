@@ -1,7 +1,7 @@
 package com.leo.elib.controller.auth;
 
-import com.leo.elib.comp_entity.Expected;
-import com.leo.elib.comp_entity.RespWrapper;
+import com.leo.elib.comp_struct.Expected;
+import com.leo.elib.comp_struct.RespWrapper;
 import com.leo.elib.constant.DeviceTypeEnum;
 import com.leo.elib.constant.ResCodeEnum;
 import com.leo.elib.entity.req.LoginEmailPwdParam;
@@ -28,7 +28,7 @@ public class AuthenController {
       return RespWrapper.error(ResCodeEnum.InvalidParam);
     Expected<AuthedUser, ResCodeEnum> res = authUsecase.login(body.email, body.password, deviceType);
     return res.isSuccess() ?
-      RespWrapper.success(res.getValue()):
+      RespWrapper.success(res.getValue()) :
       RespWrapper.error(res.getError());
   }
 }

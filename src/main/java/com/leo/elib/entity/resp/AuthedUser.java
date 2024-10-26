@@ -1,7 +1,7 @@
 package com.leo.elib.entity.resp;
 
-import com.leo.elib.comp_entity.TokenPair;
-import com.leo.elib.entity.dao.User;
+import com.leo.elib.comp_struct.TokenPair;
+import com.leo.elib.dto.dao.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

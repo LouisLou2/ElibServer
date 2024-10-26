@@ -1,6 +1,6 @@
 package com.leo.elib.service.inter;
 
-import com.leo.elib.comp_entity.TokenInfo;
+import com.leo.elib.comp_struct.TokenInfo;
 import com.leo.elib.constant.DeviceTypeEnum;
 
 public interface JwtTokenEndecoder {

@@ -1,10 +1,10 @@
 package com.leo.elib.usecase.impl;
 
-import com.leo.elib.comp_entity.Expected;
-import com.leo.elib.comp_entity.TokenPair;
+import com.leo.elib.comp_struct.Expected;
+import com.leo.elib.comp_struct.TokenPair;
 import com.leo.elib.constant.DeviceTypeEnum;
 import com.leo.elib.constant.ResCodeEnum;
-import com.leo.elib.entity.dao.User;
+import com.leo.elib.dto.dao.User;
 import com.leo.elib.entity.resp.AuthedUser;
 import com.leo.elib.mapper.UserMapper;
 import com.leo.elib.usecase.inter.AuthTokenManager;

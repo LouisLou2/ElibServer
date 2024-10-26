@@ -1,4 +1,4 @@
-package com.leo.elib.comp_entity;
+package com.leo.elib.comp_struct;
 
 import com.leo.elib.constant.DeviceTypeEnum;
 import lombok.AllArgsConstructor;

@@ -1,10 +1,12 @@
-package com.leo.elib.service.impl;
+package com.leo.elib.service.specific.impl;
 
 import com.leo.elib.constant.DeviceTypeEnum;
-import com.leo.elib.service.inter.JwtCache;
+import com.leo.elib.service.specific.inter.JwtCache;
+import com.leo.elib.service.inter.RCacheManager;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,14 @@ public class JwtCacheImpl implements JwtCache {
     @Value("${container.redis.rt_hash}")
     private String rtHashCont;
     @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+    private RCacheManager rCacheManager;
+    private HashOperations<String, String, Object> opsForHash;
+    
+    @PostConstruct
+    void init () {
+        opsForHash = rCacheManager.getOpsForHash();
+    }
+    
     
     private String getTokenHashKey(int userId,DeviceTypeEnum deviceType) {
         return userId + ":" + deviceType.getValue();
@@ -26,7 +35,7 @@ public class JwtCacheImpl implements JwtCache {
     @Override
     public Integer getVersion(boolean tokenType, int userId, DeviceTypeEnum deviceType) {
         assert deviceType != null;
-        var res = redisTemplate.opsForHash().get(
+        var res = opsForHash.get(
             tokenType ? atHashCont : rtHashCont, 
             getTokenHashKey(userId, deviceType)
         );
@@ -37,12 +46,12 @@ public class JwtCacheImpl implements JwtCache {
     public Pair<Integer, Boolean> getVersionSetIfAbsent(boolean tokenType, int userId, DeviceTypeEnum deviceType) {
         assert deviceType != null;
         var key = getTokenHashKey(userId, deviceType);
-        var res = redisTemplate.opsForHash().get(
+        var res = opsForHash.get(
             tokenType ? atHashCont : rtHashCont, 
             key
         );
         if (res == null) {
-            redisTemplate.opsForHash().put(
+            opsForHash.put(
                 tokenType ? atHashCont : rtHashCont, 
                 key, 
                 versionBegin
@@ -57,9 +66,8 @@ public class JwtCacheImpl implements JwtCache {
     public Pair<Integer, Integer> incTokenVersionGetNew(int userId, DeviceTypeEnum deviceType) {
         assert deviceType != null;
         var key = getTokenHashKey(userId, deviceType);
-        var newAtVer = redisTemplate.opsForHash().increment(atHashCont, key, 1);
-        key = getTokenHashKey(userId, deviceType);
-        var newRtVer = redisTemplate.opsForHash().increment(rtHashCont, key, 1);
+        var newAtVer = opsForHash.increment(atHashCont, key, 1);
+        var newRtVer = opsForHash.increment(rtHashCont, key, 1);
         return Pair.of(newAtVer.intValue(), newRtVer.intValue());
     }
 }

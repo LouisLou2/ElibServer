@@ -1,4 +1,4 @@
-package com.leo.elib.entity.dao;
+package com.leo.elib.dto.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Author {
-    private int id;
-    private String name;
-    private String desc;
+public class AuthorSimple {
+  private int id;
+  private String name;
 }

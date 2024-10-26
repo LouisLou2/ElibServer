@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.elib.mapper.BookInfoMapper">
+    <resultMap id ="BookDaoForListMap" type="BookDaoForList" autoMapping="true">
+        <result column="isbn" property="isbn"/>
+        <result column="original_title" property="originalTitle"/>
+        <result column="publisher_id" property="publisherId"/>
+        <result column="publisher_name" property="publisherName"/>
+        <result column="pub_date" property="pubDate"/>
+        <result column="word_count" property="wordCount"/>
+        <result column="lang_id" property="langId"/>
+        <result column="cover_m_url" property="coverMUrl"/>
+        <result column="has_ebook" property="hasEbook"/>
+        <result column="category_id" property="category1" javaType="int"/>
+        <result column="subcategory_id" property="category2" javaType="int"/>
+        <collection property="authorIds" ofType="Integer" javaType="java.util.List">
+            <result column="author_id"/>
+        </collection>
+        <collection property="authorNames" ofType="String" javaType="java.util.List">
+            <result column="author_name"/>
+        </collection>
+        <collection property="tagIds" ofType="Short" javaType="java.util.List">
+            <result column="tag_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="getBookInfoByIsbn" resultMap="BookDaoForListMap">
+        select bi.isbn,
+               bi.title,
+               bi.original_title,
+               bi.publisher_id,
+               p.publisher_name,
+               bi.pub_date,
+               bi.word_count,
+               bi.lang_id,
+               bi.cover_m_url,
+               bi.rating,
+               case when bi.ebook_url is null then false else true end as has_ebook,
+               bi.category_id,
+               bi.subcategory_id,
+               a.author_id,
+               a.name as author_name,
+               btc.tag_id
+        from book_info bi
+                 inner join publisher p on bi.publisher_id = p.publisher_id
+                 inner join book_author ba on bi.isbn = ba.isbn
+                 inner join author a on ba.author_id = a.author_id
+                 left  join book_tag_cor btc on bi.isbn = btc.isbn
+        where bi.isbn = #{isbn}
+    </select>
+
+
+<!--    <resultMap id ="BookDaoForListMap" type="BookDaoForList" autoMapping="true">-->
+<!--        <result column="isbn" property="isbn"/>-->
+<!--        <result column="original_title" property="originalTitle"/>-->
+<!--        <result column="publisher_id" property="publisherId"/>-->
+<!--        <result column="publisher_name" property="publisherName"/>-->
+<!--        <result column="pub_date" property="pubDate"/>-->
+<!--        <result column="word_count" property="wordCount"/>-->
+<!--        <result column="lang_id" property="langId"/>-->
+<!--        <result column="cover_m_url" property="coverMUrl"/>-->
+<!--        <result column="has_ebook" property="hasEbook"/>-->
+<!--        <result column="category_id" property="category1"/>-->
+<!--        <result column="category" property="category1Name"/>-->
+<!--        <result column="subcategory_id" property="category2"/>-->
+<!--        <result column="subcategory" property="category2Name"/>-->
+<!--        <collection property="authorIds" ofType="Integer" javaType="java.util.List">-->
+<!--            <result column="author_id"/>-->
+<!--        </collection>-->
+<!--        <collection property="authorNames" ofType="String" javaType="java.util.List">-->
+<!--            <result column="author_name"/>-->
+<!--        </collection>-->
+<!--        <collection property="tagIds" ofType="Integer" javaType="java.util.List">-->
+<!--            <result column="tag_id"/>-->
+<!--        </collection>-->
+<!--        <collection property="tagNames" ofType="String" javaType="java.util.List">-->
+<!--            <result column="tag_name"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+    
+<!--    <select id="getBookInfoByIsbn" resultMap="BookDaoForListMap">-->
+<!--        select bi.isbn,-->
+<!--               bi.title, -->
+<!--               bi.original_title, -->
+<!--               bi.publisher_id, -->
+<!--               p.publisher_name, -->
+<!--               bi.pub_date,-->
+<!--               bi.word_count,-->
+<!--               bi.lang_id,-->
+<!--               bi.cover_m_url,-->
+<!--               bi.rating,-->
+<!--               case when bi.ebook_url is null then false else true end as has_ebook,-->
+<!--               bi.category_id,-->
+<!--               cm.category,-->
+<!--               bi.subcategory_id,-->
+<!--               scm.subcategory,-->
+<!--               a.author_id,-->
+<!--               a.name as author_name,-->
+<!--               btc.tag_id,-->
+<!--               bt.tag_name-->
+<!--        from book_info bi-->
+<!--        inner join publisher p on bi.publisher_id = p.publisher_id-->
+<!--        inner join book_author ba on bi.isbn = ba.isbn-->
+<!--        inner join author a on ba.author_id = a.author_id-->
+<!--        left  join book_tag_cor btc on bi.isbn = btc.isbn-->
+<!--        inner join category_map cm on bi.category_id = cm.category_id-->
+<!--        inner join subcategory_map scm on bi.subcategory_id = scm.subcategory_id-->
+<!--        inner join book_tag bt on bt.tag_id = btc.tag_id-->
+<!--        where bi.isbn = #{isbn}-->
+<!--    </select>-->
+</mapper>

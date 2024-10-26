@@ -22,11 +22,16 @@ container:
   redis:
     at_hash: elib:hash:at
     rt_hash: elib:hash:rt
+    book_category_hash: elib:hash:book_cate
+    book_tag_hash_name: elib:hash:book_tag:name
+    book_tag_hash_whole: elib:hash:book_tag:whole
   
 # 设置mybatis寻找对应.xml文件的位置
 mybatis:
-  type-aliases-package: com.leo.elib.entity.dao
+  type-aliases-package: com.leo.elib.dto.dao
   mapper-locations: classpath:mapper/*.xml
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 jwt:
   at_secret: secretForElibAT

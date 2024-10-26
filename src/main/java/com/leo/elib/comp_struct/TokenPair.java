@@ -1,4 +1,4 @@
-package com.leo.elib.comp_entity;
+package com.leo.elib.comp_struct;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
