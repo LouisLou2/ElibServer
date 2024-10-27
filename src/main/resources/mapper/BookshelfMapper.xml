@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.elib.mapper.BookshelfMapper">
+    
+    <resultMap id="BookShelfMap" type="SimpleUserOwnedBook" autoMapping="true">
+        <result column="cover_m_url" property="coverMUrl"/>
+        <result column="category" property="category1"/>
+    </resultMap>
+    
+    <insert id="addBookToShelf">
+        INSERT INTO book_shelf (user_id, isbn, time)
+        VALUES (#{userId}, #{isbn}, #{time})
+    </insert>
+    
+    <update id="updateShelfBookStatus">
+        UPDATE book_shelf
+        SET status = #{status}
+        WHERE user_id = #{userId} AND
+        isbn in
+        <foreach collection="isbns" item="isbn" open="(" separator="," close=")">
+            #{isbn}
+        </foreach>
+    </update>
+
+    <delete id="removeBookFromShelf">
+        DELETE FROM book_shelf
+        WHERE user_id = #{userId} AND isbn IN
+        <foreach collection="isbns" item="isbn" open="(" separator="," close=")">
+            #{isbn}
+        </foreach>
+    </delete>
+    
+    <delete id="removeAllBooksFromShelf">
+        DELETE FROM book_shelf
+        WHERE user_id = #{userId}
+    </delete>
+
+    <select id="bookExistInShelf" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM book_shelf
+        WHERE user_id = #{userId} AND isbn = #{isbn}
+    </select>
+    
+    <select id="getAllBooksFromShelf" resultMap="BookShelfMap">
+        select bi.isbn, bi.title, bi.cover_m_url, bs.time, bi.category_id
+        from book_shelf bs
+        inner join book_info bi on bs.isbn = bi.isbn
+        where user_id = #{userId}
+    </select>
+    
+    <select id="numOfBooksInShelf" resultType="short">
+        SELECT COUNT(*)
+        FROM book_shelf
+        WHERE user_id = #{userId}
+    </select>
+</mapper>

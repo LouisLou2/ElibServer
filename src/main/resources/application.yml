@@ -43,3 +43,7 @@ path:
   filterExcludes: 
     - /auth
     - /api/book_info
+
+sys_setting:
+  bookshelf:
+    constraint: 50 # 个人书架只能最多上传50本书, beware此值最大不能超过short的最大值

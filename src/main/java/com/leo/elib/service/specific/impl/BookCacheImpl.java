@@ -10,6 +10,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,11 +32,19 @@ public class BookCacheImpl implements BookCache {
   }
   @Override
   public Pair<String, String> getCategoryName(int categoryId, int subCategoryId) {
-    var cateRes = opsForHash.get(bookCateHashCont, String.valueOf(categoryId));
-    var subCateRes = opsForHash.get(bookCateHashCont, String.valueOf(subCategoryId));
-    assert cateRes != null;
-    assert subCateRes != null;
-    return Pair.of((String) cateRes, (String) subCateRes);
+    var cateRes = opsForHash.multiGet(bookCateHashCont, List.of(String.valueOf(categoryId), String.valueOf(subCategoryId)));
+    assert cateRes.size() == 2;
+    return Pair.of(cateRes.get(0).toString(), cateRes.get(1).toString());
+  }
+
+  @Override
+  public String getCategoryName(int categoryId) {
+    return Objects.requireNonNull(
+      opsForHash.get(
+        bookCateHashCont, 
+        String.valueOf(categoryId)
+      )
+    ).toString();
   }
 
   @Override
