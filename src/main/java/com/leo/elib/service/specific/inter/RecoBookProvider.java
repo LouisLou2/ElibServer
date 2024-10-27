@@ -1,4 +1,4 @@
-package com.leo.elib.usecase.inter;
+package com.leo.elib.service.specific.inter;
 
 import java.util.List;
 

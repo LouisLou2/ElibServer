@@ -1,5 +1,6 @@
-package com.leo.elib.dto.dao;
+package com.leo.elib.entity.dto.dao;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,10 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Author {
-    private int id;
+    @JsonProperty("author_id")
+    private Integer authorId;
     private String name;
     private String desc;
+    @JsonProperty("book_count")
+    private int bookCount; // 书籍总数
 }

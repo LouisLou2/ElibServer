@@ -1,7 +1,7 @@
-package com.leo.elib.dto.resp;
+package com.leo.elib.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.leo.elib.dto.dao.BookDaoForList;
+import com.leo.elib.entity.dto.dao.BookDaoForList;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -75,44 +75,4 @@ public class BookInfoForList {
         this.tagIds = dao.getTagIds();
         this.tagNames = tagNames;
     }
-    
-    //public BookInfoForList(String isbn, String title, String originalTitle, int publisherId, String publisherName, Date pubDate, short wordCount, short langId, String coverMUrl, short rating, boolean hasEbook, int category1, int category2, List<Integer> authorIds, List<String> authorNames, List<Short> tagIds) {
-    //    this.isbn = isbn;
-    //    this.title = title;
-    //    this.originalTitle = originalTitle;
-    //    this.publisherId = publisherId;
-    //    this.publisherName = publisherName;
-    //    this.pubDate = pubDate;
-    //    this.wordCount = wordCount;
-    //    this.langId = langId;
-    //    this.coverMUrl = coverMUrl;
-    //    this.rating = rating;
-    //    this.hasEbook = hasEbook;
-    //    this.category1 = category1;
-    //    this.category2 = category2;
-    //    this.authorIds = authorIds;
-    //    this.authorNames = authorNames;
-    //    this.tagIds = tagIds;
-    //}
-    
-    //public static BookInfoForList fromBookDaoForList(BookDaoForList dao) {
-    //    return new BookInfoForList(
-    //      dao.getIsbn(),
-    //      dao.getTitle(), 
-    //      dao.getOriginalTitle(), 
-    //      dao.getPublisherId(), 
-    //      dao.getPublisherName(), 
-    //      dao.getPubDate(), 
-    //      dao.getWordCount(), 
-    //      dao.getLangId(), 
-    //      dao.getCoverMUrl(), 
-    //      dao.getRating(), 
-    //      dao.isHasEbook(), 
-    //      dao.getCategory1(), 
-    //      dao.getCategory2(), 
-    //      dao.getAuthorIds(), 
-    //      dao.getAuthorNames(), 
-    //      dao.getTagIds()
-    //    );
-    //}
 }

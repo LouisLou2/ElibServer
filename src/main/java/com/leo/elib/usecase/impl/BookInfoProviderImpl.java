@@ -1,18 +1,20 @@
 package com.leo.elib.usecase.impl;
 
-import com.leo.elib.dto.dao.BookDaoForList;
-import com.leo.elib.dto.resp.BookInfoForList;
+import com.leo.elib.entity.AuthorWithBookLis;
+import com.leo.elib.entity.BookInfoForList;
+import com.leo.elib.entity.dto.dao.Author;
+import com.leo.elib.entity.dto.dao.BookDaoForList;
 import com.leo.elib.mapper.BookInfoMapper;
 import com.leo.elib.service.specific.inter.BookCache;
 import com.leo.elib.service.specific.inter.LangCache;
-import com.leo.elib.service.specific.inter.BookInfoProvider;
-import com.leo.elib.usecase.inter.RecoBookProvider;
+import com.leo.elib.service.specific.inter.RecoBookProvider;
+import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookInfoProviderImpl implements BookInfoProvider {
@@ -24,10 +26,7 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   private LangCache langCache;
   @Resource
   private RecoBookProvider recoBookProv;
-
-  @Override
-  public BookInfoForList getBookInfo(String isbn) {
-    BookDaoForList bookDao = bookInfoMapper.getBookInfoByIsbn(isbn);
+  private BookInfoForList getBookInfoForListByDao(BookDaoForList bookDao) {
     Pair<String,String> categoryNamePair = bookCache.getCategoryName(bookDao.getCategory1(), bookDao.getCategory2());
     List<String> tagNames = bookCache.getTagNames(bookDao.getTagIds());
     return new BookInfoForList(
@@ -40,31 +39,39 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   }
 
   @Override
+  public BookInfoForList getBookInfo(String isbn) {
+    BookDaoForList bookDao = bookInfoMapper.getBookInfoByIsbn(isbn);
+    return getBookInfoForListByDao(bookDao);
+  }
+
+  @Override
   public List<BookInfoForList> getBookInfoList(List<String> bookIsbns) {
     List<BookDaoForList> bookDaoList = bookInfoMapper.getBookInfoList(bookIsbns);
-    Pair<String,String> categoryNamePair;
-    List<String> tagNames;
-    List<BookInfoForList> bookInfoList = new ArrayList<>();
-    // 没用stream写法，因为映射函数内都多个局部变量，频繁开辟释放可能会影响性能
-    for (BookDaoForList bookDao : bookDaoList) {
-      categoryNamePair = bookCache.getCategoryName(bookDao.getCategory1(), bookDao.getCategory2());
-      tagNames = bookCache.getTagNames(bookDao.getTagIds());
-      bookInfoList.add(
-        new BookInfoForList(
-          bookDao, 
-          langCache.getLangName((byte) bookDao.getLangId()), 
-          categoryNamePair.getFirst(), 
-          categoryNamePair.getSecond(), 
-          tagNames
-        )
-      );
-    }
-    return bookInfoList;
+    return bookDaoList.stream()
+      .map(this::getBookInfoForListByDao)
+      .collect(Collectors.toList());
   }
 
   @Override
   public List<BookInfoForList> getRecoBooks(int userId, int offset, int num) {
     List<String> recoBookIsbns = recoBookProv.getRecoBookIsbns(userId,offset, num);
     return getBookInfoList(recoBookIsbns);
+  }
+
+  /* 其中一个实现思路是直接在一个sql中查询出所有的信息(目前的视线较为复杂，且有临时表)
+  *  另一个思路是先查询出作者的基本信息，再查询出作者的书籍信息，然后组合在一起
+  *  测试下来，第二种思路的性能更好，因此采用第二种思路
+  */
+  @Override
+  public AuthorWithBookLis getAuthorWithBooks(int authorId, int num) {
+    Author author = bookInfoMapper.getAuthor(authorId);
+    List<BookDaoForList> bookDaoList = bookInfoMapper.getAuthorBooks(authorId, 0, num);
+    return new AuthorWithBookLis(
+      author, 
+      bookDaoList
+        .stream()
+        .map(this::getBookInfoForListByDao)
+        .collect(Collectors.toList())
+    );
   }
 }

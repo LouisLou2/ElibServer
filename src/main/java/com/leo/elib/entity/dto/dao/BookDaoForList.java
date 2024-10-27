@@ -1,4 +1,4 @@
-package com.leo.elib.dto.dao;
+package com.leo.elib.entity.dto.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

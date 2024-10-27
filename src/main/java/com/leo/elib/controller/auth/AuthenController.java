@@ -4,9 +4,12 @@ import com.leo.elib.comp_struct.Expected;
 import com.leo.elib.comp_struct.RespWrapper;
 import com.leo.elib.constant.DeviceTypeEnum;
 import com.leo.elib.constant.ResCodeEnum;
+import com.leo.elib.entity.AuthorWithBookLis;
 import com.leo.elib.entity.req.LoginEmailPwdParam;
-import com.leo.elib.entity.resp.AuthedUser;
+import com.leo.elib.entity.AuthedUser;
+import com.leo.elib.mapper.BookInfoMapper;
 import com.leo.elib.usecase.inter.AuthUsecase;
+import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,8 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenController {
   @Resource
   private AuthUsecase authUsecase;
+  @Resource
+  private BookInfoMapper bookInfoMapper;
+  @Resource
+  private BookInfoProvider bookInfoProvider;
   @PostMapping("/login")
   public RespWrapper<?> login(@RequestBody LoginEmailPwdParam body) {
+    AuthorWithBookLis it = bookInfoProvider.getAuthorWithBooks(5778, 10);
     if (!body.allSet())
       return RespWrapper.error(ResCodeEnum.InvalidParam);
     DeviceTypeEnum deviceType = DeviceTypeEnum.valueOf(body.deviceTypeCode);
@@ -28,7 +36,7 @@ public class AuthenController {
       return RespWrapper.error(ResCodeEnum.InvalidParam);
     Expected<AuthedUser, ResCodeEnum> res = authUsecase.login(body.email, body.password, deviceType);
     return res.isSuccess() ?
-      RespWrapper.success(res.getValue()) :
+      RespWrapper.success(it) :
       RespWrapper.error(res.getError());
   }
 }

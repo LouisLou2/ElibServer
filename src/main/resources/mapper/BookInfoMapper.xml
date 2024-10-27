@@ -23,8 +23,21 @@
             <result column="tag_id"/>
         </collection>
     </resultMap>
-
-    <select id="getBookInfoByIsbn" resultMap="BookDaoForListMap">
+    
+    <resultMap id="AuthorMap" type="Author" autoMapping="true">
+        <result column="author_id" property="authorId"/>
+        <result column="book_count" property="bookCount"/>
+    </resultMap>
+    
+    <resultMap id="AuthorWithBooks" type="AuthorWithBookDaoLis" autoMapping="true">
+        <result column="target_author_id" property="authorId"/>
+        <result column="target_author_name" property="name"/>
+        <result column="target_author_desc" property="desc"/>
+        <result column="target_author_book_count" property="bookCount"/>
+        <collection property="books" ofType="BookDaoForList" resultMap="BookDaoForListMap"/>
+    </resultMap>
+    
+    <sql id="bookInfoForListField">
         select bi.isbn,
                bi.title,
                bi.original_title,
@@ -35,46 +48,142 @@
                bi.lang_id,
                bi.cover_m_url,
                bi.rating,
-               case when bi.ebook_url is null then false else true end as has_ebook,
+               IF(bi.ebook_url is null, false, true) as has_ebook,
                bi.category_id,
                bi.subcategory_id,
                a.author_id,
                a.name as author_name,
                btc.tag_id
+    </sql>
+    
+    <sql id="getBookInfoForList">
+        <include refid="bookInfoForListField"/>
         from book_info bi
-                 inner join publisher p on bi.publisher_id = p.publisher_id
-                 inner join book_author ba on bi.isbn = ba.isbn
-                 inner join author a on ba.author_id = a.author_id
-                 left  join book_tag_cor btc on bi.isbn = btc.isbn
+         inner join publisher p on bi.publisher_id = p.publisher_id
+         inner join book_author ba on bi.isbn = ba.isbn
+         inner join author a on ba.author_id = a.author_id
+         left  join book_tag_cor btc on bi.isbn = btc.isbn
+    </sql>
+
+    <select id="getBookInfoByIsbn" resultMap="BookDaoForListMap">
+        <include refid="getBookInfoForList"/>
         where bi.isbn = #{isbn}
     </select>
 
     <select id="getBookInfoList" resultMap="BookDaoForListMap" parameterType="java.util.List">
-        select bi.isbn,
-        bi.title,
-        bi.original_title,
-        bi.publisher_id,
-        p.publisher_name,
-        bi.pub_date,
-        bi.word_count,
-        bi.lang_id,
-        bi.cover_m_url,
-        bi.rating,
-        case when bi.ebook_url is null then false else true end as has_ebook,
-        bi.category_id,
-        bi.subcategory_id,
-        a.author_id,
-        a.name as author_name,
-        btc.tag_id
-        from book_info bi
-        inner join publisher p on bi.publisher_id = p.publisher_id
-        inner join book_author ba on bi.isbn = ba.isbn
-        inner join author a on ba.author_id = a.author_id
-        left  join book_tag_cor btc on bi.isbn = btc.isbn
+        <include refid="getBookInfoForList"/>
         where bi.isbn IN
         <foreach item="isbn" collection="bookIsbns" open="(" separator="," close=")">
             #{isbn}
         </foreach>
+    </select>
+    
+    <select id="getCategoryBooks" resultMap="BookDaoForListMap">
+        <include refid="bookInfoForListField"/>
+        from (
+                 select isbn,
+                        title,
+                        original_title,
+                        publisher_id,
+                        pub_date,
+                        word_count,
+                        lang_id,
+                        cover_m_url,
+                        rating,
+                        ebook_url,
+                        category_id,
+                        subcategory_id
+                 from book_info
+                 <choose>
+                    <when test="categoryLevel == 1">
+                        where category_id = #{cateId}
+                    </when>
+                    <otherwise>
+                        where subcategory_id = #{cateId}
+                    </otherwise>
+                 </choose>
+                 order by rating
+                     limit #{num} offset #{offset}
+             ) bi
+                 inner join publisher p on bi.publisher_id = p.publisher_id
+                 inner join book_author ba on bi.isbn = ba.isbn
+                 inner join author a on ba.author_id = a.author_id
+                 left join book_tag_cor btc on bi.isbn = btc.isbn;
+    </select>
+    
+    <select id="getAuthor" resultMap="AuthorMap">
+        select a.author_id, name, `desc`, count(1) as book_count
+        from author a
+        inner join book_author ba on a.author_id = ba.author_id
+        where a.author_id = #{authorId}
+    </select>
+    
+    <select id="getAuthorBooks" resultMap="BookDaoForListMap">
+        <include refid="bookInfoForListField"/>
+        from (
+            select
+                book_info.isbn as isbn,
+                title,
+                original_title,
+                publisher_id,
+                pub_date,
+                word_count,
+                lang_id,
+                cover_m_url,
+                rating,
+                ebook_url,
+                category_id,
+                subcategory_id
+            from book_author
+            inner join book_info on book_author.isbn = book_info.isbn
+            where book_author.author_id = #{authorId}
+            order by book_info.rating desc
+            limit #{num} offset #{offset}
+        ) as bi
+        inner join publisher p on bi.publisher_id = p.publisher_id
+        inner join book_author ba on bi.isbn = ba.isbn
+        inner join author a on ba.author_id = a.author_id
+        left join book_tag_cor btc on bi.isbn = btc.isbn
+    </select>
+    
+    <select id="getAuthorWithBooks" resultMap="AuthorWithBooks">
+        <!-- 这个临时表只有一行 -->
+        with author_info as (
+            select a.author_id as author_id, name, `desc`, count(1) as book_count
+            from author as a
+            inner join book_author ba on a.author_id = ba.author_id
+            where a.author_id = #{authorId}
+        )
+        
+        <include refid="bookInfoForListField"/>
+        , (select author_id from author_info) as target_author_id,
+        (select name from author_info) as target_author_name,
+        (select `desc` from author_info) as target_author_desc,
+        (select book_count from author_info) as target_author_book_count
+        from (
+            select
+                book_info.isbn as isbn,
+                title,
+                original_title,
+                publisher_id,
+                pub_date,
+                word_count,
+                lang_id,
+                cover_m_url,
+                rating,
+                ebook_url,
+                category_id,
+                subcategory_id
+            from book_author
+            inner join book_info on book_author.isbn = book_info.isbn
+            where book_author.author_id = #{authorId}
+            order by book_info.rating desc
+            limit #{num}
+        ) as bi
+        inner join publisher p on bi.publisher_id = p.publisher_id
+        inner join book_author ba on bi.isbn = ba.isbn
+        inner join author a on ba.author_id = a.author_id
+        left join book_tag_cor btc on bi.isbn = btc.isbn
     </select>
 
 

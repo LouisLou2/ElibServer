@@ -1,6 +1,6 @@
 package com.leo.elib;
 
-import com.leo.elib.dto.dao.Author;
+import com.leo.elib.entity.dto.dao.Author;
 import com.leo.elib.mapper.AuthorMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
