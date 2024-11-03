@@ -15,4 +15,10 @@
         FROM user
         WHERE email = #{email}
     </select>
+
+    <select id="checkEmailExist" resultType="boolean">
+        select if(count(*) > 0, true, false)
+        from user
+        where email = #{email}
+    </select>
 </mapper>

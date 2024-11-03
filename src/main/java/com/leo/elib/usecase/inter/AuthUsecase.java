@@ -7,5 +7,8 @@ import com.leo.elib.entity.AuthedUser;
 
 public interface AuthUsecase {
 
-  Expected<AuthedUser, ResCodeEnum> login(String email, String password, DeviceTypeEnum deviceType);
+  Expected<AuthedUser, ResCodeEnum> loginEmailPwd(String email, String password, DeviceTypeEnum deviceType);
+  Expected<AuthedUser, ResCodeEnum> loginEmailCode(String email, String code, DeviceTypeEnum deviceType);
+
+  boolean checkEmailExist(String email);
 }

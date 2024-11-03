@@ -2,7 +2,7 @@ package com.leo.elib.usecase.impl;
 
 import com.leo.elib.constant.ResCodeEnum;
 import com.leo.elib.constant.book.ShelfBookEnum;
-import com.leo.elib.entity.dto.dao.SimpleUserOwnedBook;
+import com.leo.elib.entity.SimpleUserOwnedBook;
 import com.leo.elib.mapper.BookshelfMapper;
 import com.leo.elib.service.specific.inter.BookCache;
 import com.leo.elib.usecase.inter.BookshelfUsecase;

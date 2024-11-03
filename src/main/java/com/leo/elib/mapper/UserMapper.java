@@ -7,4 +7,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserMapper {
   User getUserById(int id);
   User getUserByEmail(String email);
+  boolean checkEmailExist(String email);
 }

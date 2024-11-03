@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 @Service
 public class BookCacheImpl implements BookCache {
 
-  @Value("${container.redis.book_category_hash}")
+  @Value("${container.redis.book-cache.book-cate-hash}")
   private String bookCateHashCont;
-  @Value("${container.redis.book_tag_hash_name}")
+  @Value("${container.redis.book-cache.book-tag-hash-name}")
   private String bookTagNameHashCont;
-  @Value("${container.redis.book_tag_hash_whole}")
+  @Value("${container.redis.book-cache.book-tag-hash-whole}")
   private String bookTagWholeHashCont;
   @Resource
   private RCacheManager rCacheManager;

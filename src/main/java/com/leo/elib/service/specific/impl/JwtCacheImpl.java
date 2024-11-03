@@ -15,16 +15,16 @@ public class JwtCacheImpl implements JwtCache {
     
     private final int versionBegin = 0;
     
-    @Value("${container.redis.at_hash}")
+    @Value("${container.redis.token.at-hash}")
     private String atHashCont;
-    @Value("${container.redis.rt_hash}")
+    @Value("${container.redis.token.rt-hash}")
     private String rtHashCont;
     @Resource
     private RCacheManager rCacheManager;
     private HashOperations<String, String, Object> opsForHash;
     
     @PostConstruct
-    void init () {
+    private void init () {
         opsForHash = rCacheManager.getOpsForHash();
     }
     
@@ -32,6 +32,8 @@ public class JwtCacheImpl implements JwtCache {
     private String getTokenHashKey(int userId,DeviceTypeEnum deviceType) {
         return userId + ":" + deviceType.getValue();
     }
+
+
     @Override
     public Integer getVersion(boolean tokenType, int userId, DeviceTypeEnum deviceType) {
         assert deviceType != null;

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.elib.mapper.BookMarkMapper">
+    <resultMap id="BookMarkMap" type="com.leo.elib.entity.dto.dao.MarkedBook" autoMapping="true">
+        <id column="isbn" property="isbn"/>
+        <result column="cover_s_url" property="coverSUrl"/>
+        <result column="time" property="markedTime"/>
+        <collection property="authorNames" ofType="String" javaType="java.util.List">
+            <result column="author_name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="BookMarkInfoMap" type="BookMarkInfo" autoMapping="true">
+        <result column="book_count" property="count"/>
+        <collection property="markedBooks" ofType="MarkedBook" resultMap="BookMarkMap"/>
+    </resultMap>
+
+    <insert id="insertBookMark">
+        insert into book_mark (user_id, isbn, time)
+        values (#{userId}, #{isbn}, #{markedTime})
+    </insert>
+
+    <delete id="deleteBookMark">
+        delete from book_mark
+        where user_id = #{userId} and isbn = #{isbn}
+    </delete>
+
+    <select id="getBookMarks" resultMap="BookMarkMap">
+        select book_mark.isbn, book_info.title, book_info.cover_s_url, author.name as author_name, book_mark.time
+        from book_mark
+        inner join book_info on book_mark.isbn = book_info.isbn
+        inner join book_author on book_mark.isbn = book_author.isbn
+        inner join author on book_author.author_id = author.author_id
+        where book_mark.user_id = #{userId}
+        order by book_mark.time desc
+        limit #{num} offset #{offset}
+    </select>
+
+    <select id="numOfBookMarks" resultType="java.lang.Integer">
+        select count(*)
+        from book_mark
+        where user_id = #{userId}
+    </select>
+
+    <select id="getBookMarkInfo" resultMap="BookMarkInfoMap">
+        with marked_books_count as (
+            select count(*) as book_count
+            from book_mark
+            where user_id = #{userId}
+        )
+
+        select (select book_count from marked_books_count) as book_count, book_mark.isbn, book_info.title, book_info.cover_s_url, author.name as author_name, book_mark.time
+        from book_mark
+         inner join book_info on book_mark.isbn = book_info.isbn
+         inner join book_author on book_mark.isbn = book_author.isbn
+         inner join author on book_author.author_id = author.author_id
+        where book_mark.user_id = #{userId}
+        order by book_mark.time desc
+        limit #{withNum}
+    </select>
+</mapper>

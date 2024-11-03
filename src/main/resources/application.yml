@@ -14,24 +14,63 @@ spring:
       password: #没有密码的话不用填
       timeout: 10000
       database: 0
+  mail:
+    host: smtp.163.com
+    username: lskleo@163.com
+    password: ZNFXUXHKVKCSZPWX
+    default-encoding: UTF-8
 
 server:
   port: 9021
-
-container:
-  redis:
-    at_hash: elib:hash:at
-    rt_hash: elib:hash:rt
-    book_category_hash: elib:hash:book_cate
-    book_tag_hash_name: elib:hash:book_tag:name
-    book_tag_hash_whole: elib:hash:book_tag:whole
   
 # 设置mybatis寻找对应.xml文件的位置
 mybatis:
-  type-aliases-package: com.leo.elib.entity.dto.dao
+  type-aliases-package: com.leo.elib.entity, com.leo.elib.entity.dto.dao
   mapper-locations: classpath:mapper/*.xml
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+async:
+  thread-pool:
+    core-pool-size: 2
+    max-pool-size: 10
+    queue-capacity: 25
+    keep-alive-seconds: 60
+    thread-name-prefix: async-service-
+    await-termination-seconds: 30
+
+#container:
+#  redis:
+#    at_hash: elib:hash:at
+#    rt_hash: elib:hash:rt
+#    book_category_hash: elib:hash:book_cate
+#    book_tag_hash_name: elib:hash:book_tag:name
+#    book_tag_hash_whole: elib:hash:book_tag:whole
+#
+#    content_hash: elib:hash:content
+container:
+  redis:
+    token:
+      at-hash: elib:hash:at
+      rt-hash: elib:hash:rt
+    book-cache:
+      book-cate-hash: elib:hash:book_cate
+      book-tag-hash-name: elib:hash:book_tag:name
+      book-tag-hash-whole: elib:hash:book_tag:whole
+    template:
+      content-hash: elib:hash:content
+    authen-code:
+      authen-code-hash: elib:hash:authen_code
+      authen-code-zset: elib:zset:authen_code
+      clean-interval-ms: 3600000 # 1 hour
+
+authen:
+  verify:
+    length: 6
+  captcha:
+    length: 4
+  setting:
+    expiration: 300
 
 jwt:
   at_secret: secretForElibAT
@@ -47,3 +86,6 @@ path:
 sys_setting:
   bookshelf:
     constraint: 50 # 个人书架只能最多上传50本书, beware此值最大不能超过short的最大值
+  #书籍收藏
+  book_mark:
+    constraint: 1000 # 星星收藏最多1000本书

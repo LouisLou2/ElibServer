@@ -31,6 +31,6 @@ public class ApiExample {
     @GetMapping("/api/author")
     public Author hello(@RequestBody AuthorIdReq req, HttpServletRequest request){
         // var tokenInfo = (TokenInfo)request.getAttribute("tokenInfo");
-        return authorMapper.getAuthorById(req.getAuthorId());
+        return authorMapper.getAuthor(req.getAuthorId());
     }
 }

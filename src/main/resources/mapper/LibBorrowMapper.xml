@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.elib.mapper.LibBorrowMapper">
+    <resultMap id="SimpleLibMap" type="SimpleLib">
+        <id column="lib_id" property="libId"/>
+    </resultMap>
+
+    <select id="getLibsWithStatus" resultMap="SimpleLibMap">
+        select lib.lib_id, lib.name
+        from library lib
+        inner join unq_lib_book unq on lib.lib_id = unq.lib_id
+        where unq.isbn = #{isbn} and unq.status = #{status}
+        group by lib.lib_id
+    </select>
+</mapper>

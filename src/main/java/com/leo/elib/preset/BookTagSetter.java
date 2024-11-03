@@ -17,9 +17,9 @@ import java.util.List;
 
 @Service
 public class BookTagSetter {
-  @Value("${container.redis.book_tag_hash_name}")
+  @Value("${container.redis.book-cache.book-tag-hash-name}")
   private String bookTagNameHashCont;
-  @Value("${container.redis.book_tag_hash_whole}")
+  @Value("${container.redis.book-cache.book-tag-hash-whole}")
   private String bookTagWholeHashCont;
   @Resource
   private RCacheManager rCacheManager;

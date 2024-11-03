@@ -2,6 +2,7 @@ package com.leo.elib.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.leo.elib.entity.dto.dao.Author;
+import com.leo.elib.entity.dto.dao.BookBrief;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,9 @@ public class AuthorWithBookLis {
   private String desc;
   @JsonProperty("book_count")
   private int bookCount; // 书籍总数
-  List<BookInfoForList> books;
+  List<BookBrief> books;
   
-  public AuthorWithBookLis(Author author, List<BookInfoForList> books) {
+  public AuthorWithBookLis(Author author, List<BookBrief> books) {
     this.authorId = author.getAuthorId();
     this.name = author.getName();
     this.desc = author.getDesc();

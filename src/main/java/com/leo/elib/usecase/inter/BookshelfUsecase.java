@@ -1,7 +1,7 @@
 package com.leo.elib.usecase.inter;
 
 import com.leo.elib.constant.ResCodeEnum;
-import com.leo.elib.entity.dto.dao.SimpleUserOwnedBook;
+import com.leo.elib.entity.SimpleUserOwnedBook;
 
 import java.util.List;
 

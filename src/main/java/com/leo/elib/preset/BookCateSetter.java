@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 @Service
 public class BookCateSetter {
-  @Value("${container.redis.book_category_hash}")
+  @Value("${container.redis.book-cache.book-cate-hash}")
   private String bookCateHashCont;
   @Resource
   private RCacheManager rCacheManager;

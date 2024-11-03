@@ -1,16 +1,18 @@
 package com.leo.elib.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.leo.elib.entity.dto.dao.BookDaoForList;
+import com.leo.elib.entity.dto.dao.SimpleLib;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
 @Getter
-public class BookInfoForList {
+@Setter
+public class BookInfo {
     private String isbn;
     private String title;
     @JsonProperty("original_title")
@@ -21,14 +23,19 @@ public class BookInfoForList {
     private String publisherName;
     @JsonProperty("pub_date")
     private Date pubDate;
+    private String desc;
     @JsonProperty("word_count")
     private short wordCount;
     @JsonProperty("lang_id")
     private short langId;
     @JsonProperty("lang_name")
     private String langName;
+    @JsonProperty("cover_s_url")
+    private String coverSUrl;
     @JsonProperty("cover_m_url")
     private String coverMUrl;
+    @JsonProperty("cover_l_url")
+    private String coverLUrl;
     private short rating;
     @JsonProperty("has_ebook")
     private boolean hasEbook;
@@ -46,33 +53,18 @@ public class BookInfoForList {
     private List<Short> tagIds;
     @JsonProperty("tag_names")
     private List<String> tagNames;
+    @JsonProperty("available_libs")
+    private List<SimpleLib> availableLibs;
     
-    public BookInfoForList(
-      BookDaoForList dao,
-       String langName, 
-       String category1Name, 
-       String category2Name, 
-       List<String> tagNames
-    ){
-        this.isbn = dao.getIsbn();
-        this.title = dao.getTitle();
-        this.originalTitle = dao.getOriginalTitle();
-        this.publisherId = dao.getPublisherId();
-        this.publisherName = dao.getPublisherName();
-        this.pubDate = dao.getPubDate();
-        this.wordCount = dao.getWordCount();
-        this.langId = dao.getLangId();
+    public void setNames(
+      String langName, 
+      String category1Name, 
+      String category2Name, 
+      List<String> tagNames
+      ) {
         this.langName = langName;
-        this.coverMUrl = dao.getCoverMUrl();
-        this.rating = dao.getRating();
-        this.hasEbook = dao.isHasEbook();
-        this.category1 = dao.getCategory1();
         this.category1Name = category1Name;
-        this.category2 = dao.getCategory2();
         this.category2Name = category2Name;
-        this.authorIds = dao.getAuthorIds();
-        this.authorNames = dao.getAuthorNames();
-        this.tagIds = dao.getTagIds();
         this.tagNames = tagNames;
     }
 }

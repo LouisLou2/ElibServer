@@ -1,10 +1,11 @@
 package com.leo.elib.mapper;
 
-import com.leo.elib.entity.dto.dao.SimpleUserOwnedBook;
+import com.leo.elib.entity.SimpleUserOwnedBook;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Mapper
 public interface BookshelfMapper {
   void addBookToShelf(int userId, String isbn, LocalDateTime time);
   int removeBookFromShelf(int userId, List<String> isbns);

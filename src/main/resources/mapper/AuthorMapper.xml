@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.leo.elib.mapper.AuthorMapper">
-    <resultMap id="AuthorMap" type="Author">
-        <id column="author_id" property="id"/>
+    
+    <resultMap id="AuthorMap" type="Author" autoMapping="true">
+        <result column="author_id" property="authorId"/>
+        <result column="book_count" property="bookCount"/>
     </resultMap>
 
-    <select id="getAuthorById" resultMap="AuthorMap">
-        SELECT author_id, name, `desc`
-        FROM author
-        WHERE author_id = #{id}
+    <select id="getAuthor" resultMap="AuthorMap">
+        select a.author_id, name, `desc`, count(1) as book_count
+        from author a
+                 inner join book_author ba on a.author_id = ba.author_id
+        where a.author_id = #{authorId}
     </select>
+    
 </mapper>
