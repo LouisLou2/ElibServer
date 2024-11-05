@@ -11,7 +11,9 @@
         <result column="word_count" property="wordCount"/>
         <result column="lang_id" property="langId"/>
         <result column="cover_m_url" property="coverMUrl"/>
-        <result column="has_ebook" property="hasEbook"/>
+        <result column="cover_l_url" property="coverLUrl"/>
+        <result column="cover_s_url" property="coverSUrl"/>
+        <result column="ebook_url" property="ebookUrl"/>
         <result column="category_id" property="category1" javaType="int"/>
         <result column="subcategory_id" property="category2" javaType="int"/>
         <collection property="authorIds" ofType="Integer" javaType="java.util.List">
@@ -94,7 +96,30 @@
     </sql>
 
     <select id="getBookInfoByIsbn" resultMap="BookInfoMap">
-        <include refid="getBookInfo"/>
+        select bi.isbn,
+               bi.title,
+               bi.original_title,
+               bi.publisher_id,
+               p.publisher_name,
+               bi.pub_date,
+               bi.`desc`,
+               bi.word_count,
+               bi.lang_id,
+               bi.cover_s_url,
+               bi.cover_m_url,
+               bi.cover_l_url,
+               bi.rating,
+               bi.ebook_url,
+               bi.category_id,
+               bi.subcategory_id,
+               a.author_id,
+               a.name as author_name,
+               btc.tag_id
+        from book_info bi
+         inner join publisher p on bi.publisher_id = p.publisher_id
+         inner join book_author ba on bi.isbn = ba.isbn
+         inner join author a on ba.author_id = a.author_id
+         left  join book_tag_cor btc on bi.isbn = btc.isbn
         where bi.isbn = #{isbn}
     </select>
 
@@ -188,6 +213,37 @@
         inner join publisher p on bi.publisher_id = p.publisher_id
         inner join book_author ba on bi.isbn = ba.isbn
         inner join author a on ba.author_id = a.author_id
+    </select>
+
+    <select id="debug_getBookInfo" resultMap="BookInfoMap">
+        select bi.isbn,
+               bi.title,
+               bi.original_title,
+               bi.publisher_id,
+               p.publisher_name,
+               bi.pub_date,
+               bi.`desc`,
+               bi.word_count,
+               bi.lang_id,
+               bi.cover_s_url,
+               bi.cover_m_url,
+               bi.cover_l_url,
+               bi.rating,
+               bi.ebook_url,
+               bi.category_id,
+               bi.subcategory_id,
+               a.author_id,
+               a.name as author_name,
+               btc.tag_id
+        from (
+                select *
+                from book_info
+                limit #{num} offset #{offset}
+             ) as bi
+         inner join publisher p on bi.publisher_id = p.publisher_id
+         inner join book_author ba on bi.isbn = ba.isbn
+         inner join author a on ba.author_id = a.author_id
+         left  join book_tag_cor btc on bi.isbn = btc.isbn
     </select>
 
 </mapper>

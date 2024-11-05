@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.leo.elib.mapper.UserMapper">
-    <resultMap id="UserMap" type="User">
+
+    <resultMap id="UserMap" type="User" autoMapping="true">
         <id column="user_id" property="userId"/>
+    </resultMap>
+
+    <resultMap id="UserRestrictionMap" type="UserRestriction" autoMapping="true">
+        <result column="overdue_count_this_month" property="overdueTimesThisMonth"/>
+        <result column="reserved_unpicked" property="reservedButUnpicked"/>
+        <result column="unreturned" property="borrowedButUnreturned"/>
     </resultMap>
 
     <select id="getUserById" resultType="User" resultMap="UserMap">
@@ -21,4 +28,22 @@
         from user
         where email = #{email}
     </select>
+
+    <select id="getUserRestriction" resultMap="UserRestrictionMap">
+        SELECT
+            r.count as reserved_unpicked,
+            b.count as unreturned,
+            u.restricted,
+            u.overdue_count_this_month
+        FROM
+            (SELECT COUNT(*) AS count FROM reservation where status = #{pendingReserve} and user_id = #{userId}) r,
+            (SELECT COUNT(*) AS count FROM borrow_record where status = #{unreturned} and user_id = #{userId}) b,
+            (select restricted, overdue_count_this_month from user where user_id = #{userId}) u
+    </select>
+
+        <!--    <select id="getUserRestriction" resultMap="UserRestrictionMap">-->
+<!--        select restricted, overdue_count_this_month-->
+<!--        from user-->
+<!--        where user_id = #{userId}-->
+<!--    </select>-->
 </mapper>

@@ -1,6 +1,6 @@
 package com.leo.elib.usecase.impl;
 
-import com.leo.elib.constant.book.LibBookStatusEnum;
+import com.leo.elib.constant.book.LibBookStatus;
 import com.leo.elib.entity.AuthorWithBookLis;
 import com.leo.elib.entity.BookInfo;
 import com.leo.elib.entity.dto.dao.Author;
@@ -9,8 +9,8 @@ import com.leo.elib.entity.dto.dao.SimpleLib;
 import com.leo.elib.mapper.AuthorMapper;
 import com.leo.elib.mapper.BookInfoMapper;
 import com.leo.elib.mapper.LibBorrowMapper;
-import com.leo.elib.service.specific.inter.BookCache;
-import com.leo.elib.service.specific.inter.LangCache;
+import com.leo.elib.service.specific.inter.spec_cache.BookCache;
+import com.leo.elib.service.specific.inter.spec_cache.LangCache;
 import com.leo.elib.service.specific.inter.RecoBookProvider;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
@@ -50,13 +50,22 @@ public class BookInfoProviderImpl implements BookInfoProvider {
     BookInfo bi = bookInfoMapper.getBookInfoByIsbn(isbn);
     List<SimpleLib> libs = libBorrowMapper.getLibsWithStatus(
       isbn, 
-      LibBookStatusEnum.AVAILABLE.getCode()
+      LibBookStatus.Available.getCode()
     );
     bi.setAvailableLibs(libs);
     setBookInfoCachedFields(bi);
     return bi;
   }
-  
+
+  @Override
+  public List<BookInfo> debug_getBooksByIsbn(int offset, int num) {
+    List<BookInfo> bookInfos = bookInfoMapper.debug_getBookInfo(offset, num);
+    for (BookInfo bi : bookInfos) {
+      setBookInfoCachedFields(bi);
+    }
+    return bookInfos;
+  }
+
   @Override
   public List<BookBrief> getRecoBooks(int userId, int offset, int num) {
     List<String> recoBookIsbns = recoBookProv.getRecoBookIsbns(userId,offset, num);

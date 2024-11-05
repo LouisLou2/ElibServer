@@ -1,7 +1,7 @@
-package com.leo.elib.service.specific.impl;
+package com.leo.elib.service.specific.impl.spec_cache;
 
 import com.leo.elib.service.inter.RCacheManager;
-import com.leo.elib.service.specific.inter.BookCache;
+import com.leo.elib.service.specific.inter.spec_cache.BookCache;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;

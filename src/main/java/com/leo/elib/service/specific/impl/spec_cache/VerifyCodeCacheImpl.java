@@ -1,9 +1,9 @@
-package com.leo.elib.service.specific.impl;
+package com.leo.elib.service.specific.impl.spec_cache;
 
 import com.leo.elib.comp_struct.CacheWithTime;
 import com.leo.elib.constant.AuthenCodeType;
 import com.leo.elib.service.inter.RCacheManager;
-import com.leo.elib.service.specific.inter.VerifyCodeCache;
+import com.leo.elib.service.specific.inter.spec_cache.VerifyCodeCache;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;

@@ -10,6 +10,9 @@ import java.util.List;
 @Mapper
 public interface BookInfoMapper {
   BookInfo getBookInfoByIsbn(String isbn);
+
+  // 注意这个方法是为了调试用的，不要在其他地方调用，还有就是，因为有的书友几个作者，所以返回的数目不一定是num，这与调试目的无关，故没有修改
+  List<BookInfo> debug_getBookInfo(int offset, int num);
   List<BookBrief> getBookBriefList(List<String> isbns);
   // TODO: 目前默认是按照评分降序得到的
   List<BookBrief> getCategoryBriefBooks(byte categoryLevel, int cateId, int offset, int num);

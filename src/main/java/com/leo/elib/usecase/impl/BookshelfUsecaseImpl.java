@@ -4,7 +4,7 @@ import com.leo.elib.constant.ResCodeEnum;
 import com.leo.elib.constant.book.ShelfBookEnum;
 import com.leo.elib.entity.SimpleUserOwnedBook;
 import com.leo.elib.mapper.BookshelfMapper;
-import com.leo.elib.service.specific.inter.BookCache;
+import com.leo.elib.service.specific.inter.spec_cache.BookCache;
 import com.leo.elib.usecase.inter.BookshelfUsecase;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package com.leo.elib.service.specific.inter;
+package com.leo.elib.service.specific.inter.spec_cache;
 
 public interface CaptchaCache {
   // 返回key

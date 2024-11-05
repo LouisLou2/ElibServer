@@ -37,8 +37,8 @@ public class BookInfo {
     @JsonProperty("cover_l_url")
     private String coverLUrl;
     private short rating;
-    @JsonProperty("has_ebook")
-    private boolean hasEbook;
+    @JsonProperty("ebookUrl")
+    private String ebookUrl;
     private int category1;
     @JsonProperty("category1_name")
     private String category1Name;

@@ -8,10 +8,21 @@
     </resultMap>
 
     <select id="getAuthor" resultMap="AuthorMap">
-        select a.author_id, name, `desc`, count(1) as book_count
+        select a.author_id, name, `desc`, if (ba.author_id is null, 0, count(1)) as book_count
         from author a
-                 inner join book_author ba on a.author_id = ba.author_id
+        left join book_author ba on a.author_id = ba.author_id
         where a.author_id = #{authorId}
     </select>
-    
+
+    <select id="debug_getAuthor" resultMap="AuthorMap">
+        select a.author_id, a.name, a.`desc`, if (ba.author_id is null, 0, count(1)) as book_count
+        from (
+         select author_id, name, `desc`
+         from author
+         limit #{num} offset #{offset}
+        ) a
+        left join book_author ba on a.author_id = ba.author_id
+        group by a.author_id
+    </select>
+
 </mapper>

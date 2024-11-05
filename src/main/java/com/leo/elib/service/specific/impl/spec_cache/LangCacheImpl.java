@@ -1,6 +1,6 @@
-package com.leo.elib.service.specific.impl;
+package com.leo.elib.service.specific.impl.spec_cache;
 
-import com.leo.elib.service.specific.inter.LangCache;
+import com.leo.elib.service.specific.inter.spec_cache.LangCache;
 import org.springframework.stereotype.Service;
 
 @Service

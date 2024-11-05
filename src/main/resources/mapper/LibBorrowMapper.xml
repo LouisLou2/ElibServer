@@ -5,6 +5,13 @@
         <id column="lib_id" property="libId"/>
     </resultMap>
 
+
+    <update id="setStatusWithOriginalStatus">
+        update unq_lib_book
+        set status = #{status}
+        where book_unq_id = #{bookUnqId} and status = #{originalStatus}
+    </update>
+
     <select id="getLibsWithStatus" resultMap="SimpleLibMap">
         select lib.lib_id, lib.name
         from library lib
@@ -12,4 +19,12 @@
         where unq.isbn = #{isbn} and unq.status = #{status}
         group by lib.lib_id
     </select>
+
+    <select id="getOneBookUniqueId" resultType="Integer">
+        select book_unq_id
+        from unq_lib_book
+        where isbn = #{isbn} and lib_id = #{libId} and status = #{status}
+        limit 1
+    </select>
+
 </mapper>

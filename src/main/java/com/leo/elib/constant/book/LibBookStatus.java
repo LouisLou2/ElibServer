@@ -6,12 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public enum LibBookStatusEnum {
-  AVAILABLE((byte) 0, "available"),
-  BORROWED((byte) 1, "borrowed"),
-  RESERVED((byte) 2, "reserved"),
-  LOCKED((byte) 3, "locked"),
-  MAINTENANCE((byte) 4, "maintenance");
+public enum LibBookStatus {
+  Available((byte) 0, "available"),
+  Reserved((byte) 1, "reserved"),
+  Borrowed((byte) 2, "borrowed"),
+  Locked((byte) 3, "locked"),
+  Maintaining((byte) 4, "maintenance");
 
   private final byte code;
 
@@ -24,8 +24,8 @@ public enum LibBookStatusEnum {
   }
 
   @JsonCreator
-  public static LibBookStatusEnum valueOf(byte code) {
-    for (LibBookStatusEnum status : LibBookStatusEnum.values()) {
+  public static LibBookStatus valueOf(byte code) {
+    for (LibBookStatus status : LibBookStatus.values()) {
       if (status.code == code) {
         return status;
       }

@@ -10,6 +10,7 @@ public enum ResCodeEnum {
   Success(0, "success"),
   /*---General Error-------------------*/
   InvalidParam(1, "invalid param"),
+  InvalidRequest(2, "invalid request"),
   /*---Auth----------------------------*/
   UserNotExist(101, "user not exist"),
   PasswordIncorrect(102, "password not correct"),
@@ -20,7 +21,15 @@ public enum ResCodeEnum {
   /*---BookMark-------------------------*/
   BookCollectionIsFull(301, "book collection has reached its max capacity"),
   AlreadyCollected(302, "book already collected"),
-  BookNotCollected(303, "book not collected");
+  BookNotCollected(303, "book not collected"),
+  /*---BookReserve-------------------------*/
+  ReserveNotAvailable(401, "该书籍暂无剩余副本"),
+  TooMuchReservedOrUnreturned(402, "too much reserved or unreturned books"),
+  BeenRestricted(403, "has been restricted"),
+  TooMuchOverdue(404, "too much overdue books"),
+  ReserveFailed(405, "失败，预约人数过多，系统繁忙"),
+
+  CancelWillCauseOverdue(501, "取消预约将导致超时次数+1");
 
   final int code;
   @Getter
@@ -39,5 +48,9 @@ public enum ResCodeEnum {
       }
     }
     return null;
+  }
+
+  public boolean isSuccess() {
+    return this == Success;
   }
 }

@@ -19,16 +19,59 @@ spring:
     username: lskleo@163.com
     password: ZNFXUXHKVKCSZPWX
     default-encoding: UTF-8
+#  elasticsearch:
+#    uris: https://8.148.24.68:9200
+#    username: elastic
+#    password: N3HJYi89CVkShkiBaGKt
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        data:
+#          elasticsearch:
+#            core:
+#              query: debug
 
 server:
   port: 9021
   
 # 设置mybatis寻找对应.xml文件的位置
 mybatis:
-  type-aliases-package: com.leo.elib.entity, com.leo.elib.entity.dto.dao
+  type-aliases-package: com.leo.elib.entity, com.leo.elib.entity.dto.dao, com.leo.elib.mapper.type
   mapper-locations: classpath:mapper/*.xml
+  type-handlers-package: com.leo.elib.mapper.type
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#es:
+#  host: es-cn-y1i3zlquw000635jb.public.elasticsearch.aliyuncs.com
+#  port: 9200
+#  https:
+#    enabled: false
+#    insecure: true
+#  username: elastic
+#  password: Lou200499
+#  doc:
+#    book_detail_info:
+#      index_name: book_detailed_info
+es:
+  host: 111.230.63.174
+  port: 9200
+  https:
+    enabled: true
+    insecure: true
+  username: elastic
+  password: M5_nODOEc=Xmb30kJRTS
+  doc:
+    book_detail_info:
+      index_name: book_detailed_info
+    author_info:
+      index_name: author
+    publisher_info:
+      index_name: publisher
+    viewing_history:
+      book:
+        index_name: book_viewing_history
 
 async:
   thread-pool:
@@ -63,6 +106,12 @@ container:
       authen-code-hash: elib:hash:authen_code
       authen-code-zset: elib:zset:authen_code
       clean-interval-ms: 3600000 # 1 hour
+    chart:
+      trending_book_zset: elib:zset:trending_book
+      trending_author_zset: elib:zset:trending_author
+    popular_cache:
+      book: elib:hash:popular_book
+      author: elib:hash:popular_author
 
 authen:
   verify:
@@ -89,3 +138,18 @@ sys_setting:
   #书籍收藏
   book_mark:
     constraint: 1000 # 星星收藏最多1000本书
+
+  reservation:
+    reserve_and_unreturn_limit: 10 #已经预约以及未归还的书籍之和不能超过10本，超过则不能再预约
+    max_overdue_per_month: 3 #每月最多超期3次
+    max_try_times: 3 #最多尝试预约3次
+
+  viewing_history:
+    book:
+     max_days: 30 #最多保存30天的浏览记录
+
+  user_behavior:
+    weight:
+      tap: 1
+      collect: 3
+      reserve: 6

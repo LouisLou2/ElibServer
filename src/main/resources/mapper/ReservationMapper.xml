@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.elib.mapper.ReservationMapper">
+
+    <resultMap id="ReserveBriefRecordMap" type="ReserveBriefRecord" autoMapping="true">
+        <id property="reservedId" column="reserve_id"/>
+        <result property="coverSUrl" column="cover_s_url"/>
+        <result property="pickUpTime" column="deadline"/>
+    </resultMap>
+
+    <resultMap id="ReserveRecordMap" type="ReserveRecord" autoMapping="true">
+        <id property="reserveId" column="reserve_id"/>
+        <result property="oneAuthorName" column="one_author"/>
+        <result property="coverSUrl" column="cover_s_url"/>
+        <result property="libId" column="lib_id"/>
+        <result property="libName" column="lib_name"/>
+        <result property="reserveTime" column="reserve_time"/>
+    </resultMap>
+
+    <insert id="insertRecord">
+        INSERT INTO reservation (user_id, book_unq_id, lib_id, isbn, status, reserve_time, deadline)
+        VALUES (#{userId}, #{bookUnqId}, #{libId}, #{isbn}, #{status}, #{reserveTime}, #{pickUpTime})
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE reservation
+        SET status = #{status}
+        WHERE reserve_id = #{reserveId}
+    </update>
+
+    <select id="getUserRecordWithStatus" resultType="int">
+        SELECT COUNT(*)
+        FROM reservation
+        WHERE user_id = #{userId} AND status = #{status}
+    </select>
+
+    <select id="getReserved" resultMap="ReserveBriefRecordMap">
+        <!--如果status字段是null，那么就是查询所有的预约记录-->
+        SELECT r.reserve_id, b.title, b.cover_s_url, r.status, r.deadline
+        FROM reservation r
+        inner join book_info b on b.isbn = r.isbn
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        limit #{num} offset #{offset}
+    </select>
+
+    <select id="getReserveRecord" resultMap="ReserveRecordMap">
+        SELECT r.reserve_id,
+               bi.isbn,
+               bi.title,
+               bi.one_author,
+               bi.cover_s_url,
+               r.status,
+               r.lib_id,
+               l.name as lib_name,
+               ulb.location,
+               r.reserve_time,
+               r.deadline
+        FROM reservation r
+        inner join book_info bi on bi.isbn = r.isbn
+        inner join unq_lib_book ulb on r.book_unq_id = ulb.book_unq_id
+        inner join library l on l.lib_id = r.lib_id
+        WHERE r.reserve_id = #{reserveId}
+    </select>
+
+</mapper>

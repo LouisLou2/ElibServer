@@ -56,14 +56,14 @@ public class AuthenController {
 
   @PostMapping("/login/email_code")
   public RespWrapper<?> loginEmailCode(@RequestBody LoginEmailCodeParam body) {
-    var it = bookMarkUsecase.getBookMarks(10003, 0, 10);
-    var it1 = bookMarkUsecase.getBookMarkInfo(10003, 10);
-    return RespWrapper.success(it1);
-//    if (!body.allSet())
-//      return RespWrapper.error(ResCodeEnum.InvalidParam);
-//    Expected<AuthedUser, ResCodeEnum> res = authUsecase.loginEmailCode(body.email, body.code, body.deviceType);
-//    return res.isSuccess() ?
-//      RespWrapper.success(res.getValue()) :
-//      RespWrapper.error(res.getError());
+//    var it = bookMarkUsecase.getBookMarks(10003, 0, 10);
+//    var it1 = bookMarkUsecase.getBookMarkInfo(10003, 10);
+//    return RespWrapper.success(it1);
+    if (!body.allSet())
+      return RespWrapper.error(ResCodeEnum.InvalidParam);
+    Expected<AuthedUser, ResCodeEnum> res = authUsecase.loginEmailCode(body.email, body.code, body.deviceType);
+    return res.isSuccess() ?
+      RespWrapper.success(res.getValue()) :
+      RespWrapper.error(res.getError());
   }
 }

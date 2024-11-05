@@ -3,24 +3,32 @@ package com.leo.elib;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.leo.elib.constant.book.LibBookStatusEnum;
-import com.leo.elib.mapper.BookInfoMapper;
-import com.leo.elib.mapper.BookMarkMapper;
-import com.leo.elib.mapper.LibBorrowMapper;
+import com.leo.elib.constant.book.LibBookStatus;
+import com.leo.elib.entity.BookInfo;
+import com.leo.elib.entity.BookViewingHistory;
+import com.leo.elib.entity.dto.dao.Author;
+import com.leo.elib.entity.dto.dao.Publisher;
+import com.leo.elib.entity.elastic.BookDetailedInfo;
+import com.leo.elib.mapper.*;
 import com.leo.elib.service.inter.EmailSevice;
 import com.leo.elib.service.inter.RCacheManager;
 import com.leo.elib.service.specific.inter.EmailContentProvider;
 import com.leo.elib.usecase.inter.AuthUsecase;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import com.leo.elib.usecase.inter.BookMarkUsecase;
+import com.leo.elib.usecase.inter.search.SearchUsecase;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.IndexOperations;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootTest
 class ElibApplicationTests {
@@ -42,10 +50,21 @@ class ElibApplicationTests {
     private BookMarkMapper bookMarkMapper;
     @Resource
     private BookMarkUsecase bookMarkUsecase;
+    @Autowired
+    private ReservationMapper reservationMapper;
+    @Resource
+    private ElasticsearchTemplate esTemp;
+    @Resource
+    private SearchUsecase searchUsecase;
+    @Autowired
+    private PublisherMapper publisherMapper;
+
+  @Autowired
+  private AuthorMapper authorMapper;
 
     @Test
     void contextLoads() {
-        var it = libBorrowMapper.getLibsWithStatus("000100039X", (byte) LibBookStatusEnum.AVAILABLE.getCode());
+        var it = libBorrowMapper.getLibsWithStatus("000100039X", LibBookStatus.Available.getCode());
         var now = System.currentTimeMillis();
         for (int i=0;i<1;++i){
             var bi1 = bookInfoProvider.getBookInfo("000100039X");
@@ -129,4 +148,134 @@ class ElibApplicationTests {
             e.printStackTrace();
         }
     }
+
+    @Test
+    void testReserve() {
+      var it = reservationMapper.getReserveRecord(1);
+//        var now = System.currentTimeMillis();
+//        for (int i=0;i<1;++i){
+//          var it = reservationMapper.getReserved(10003, null, 0, 10);
+//          int x=0;
+//        }
+//        var end = System.currentTimeMillis();
+//        System.out.println(end-now);
+        int x=0;
+    }
+
+    @Test
+    void testEs() {
+      IndexOperations indexOps = esTemp.indexOps(BookDetailedInfo.class);
+      boolean exists = indexOps.exists();
+      if (!exists) {
+        boolean create = indexOps.createWithMapping();
+        if (create) {
+          System.out.println("create index success");
+        }
+      }
+      // 插入数据
+      int offset =0;
+      int page = 100;
+      while (true){
+          List<BookInfo> infos = bookInfoProvider.debug_getBooksByIsbn(offset, page);
+          if (infos.isEmpty()){
+              break;
+          }
+          List<BookDetailedInfo> detailedInfos = infos.stream().map(BookDetailedInfo::new).toList();
+          esTemp.save(detailedInfos);
+          offset += infos.size();
+      }
+      System.out.println("inserted "+ offset + " records");
+    }
+
+    @Test
+    void testInsertEsAuthor(){
+      IndexOperations indexOps = esTemp.indexOps(Author.class);
+      boolean exists = indexOps.exists();
+      if (exists){
+        boolean delete = indexOps.delete();
+        if (delete){
+          System.out.println("delete index success");
+        }else{
+          throw new RuntimeException("delete index failed");
+        }
+      }
+      boolean create = indexOps.createWithMapping();
+      if (create) {
+        System.out.println("create index success");
+      }else{
+        throw new RuntimeException("create index failed");
+      }
+      // 插入数据
+      int offset =0;
+      int page = 100;
+      List<Author> authors;
+      while (true){
+          authors = authorMapper.debug_getAuthor(page,offset);
+          if (authors.isEmpty()){
+              break;
+          }
+          esTemp.save(authors);
+          offset += authors.size();
+          System.out.println("inserted "+ offset + " records");
+      }
+      System.out.println("total: inserted "+ offset + " records");
+    }
+
+  @Test
+  void testSearchEs() {
+    var now = System.currentTimeMillis();
+    for (int i=0;i<50;++i){
+      // var infos = esTemp.get("000100039X", BookDetailedInfo.class);
+      var it = searchUsecase.searchInBooks("twisted", 0, 10);
+//    var it1 = esTemp.get("10149", Author.class);
+//    int x=0;
+    }
+    var end = System.currentTimeMillis();
+    System.out.println(end-now);
+  }
+
+  @Test
+  void testInsertPublisher(){
+    IndexOperations indexOps = esTemp.indexOps(Publisher.class);
+    boolean exists = indexOps.exists();
+    if (exists){
+      boolean delete = indexOps.delete();
+      if (delete){
+        System.out.println("delete index success");
+      }else{
+        throw new RuntimeException("delete index failed");
+      }
+    }
+    boolean create = indexOps.createWithMapping();
+    if (create) {
+      System.out.println("create index success");
+    }else{
+      throw new RuntimeException("create index failed");
+    }
+    // 插入数据
+    int offset =0;
+    int page = 100;
+    while (true){
+      List<Publisher> pubs = publisherMapper.debug_getPublishers(page, offset);
+      if (pubs.isEmpty()){
+        break;
+      }
+      esTemp.save(pubs);
+      offset += pubs.size();
+      System.out.println("inserted "+ offset + " records");
+    }
+    System.out.println("total: inserted "+ offset + " records");
+  }
+
+  @Test
+  void createBookViewingHistoryIndex(){
+    IndexOperations indexOps = esTemp.indexOps(BookViewingHistory.class);
+    boolean exists = indexOps.exists();
+    if (!exists) {
+      boolean create = indexOps.createWithMapping();
+      if (create) {
+        System.out.println("create index success");
+      }
+    }
+  }
 }

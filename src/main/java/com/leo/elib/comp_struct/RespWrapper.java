@@ -10,6 +10,7 @@ public class RespWrapper<T> {
     private int code;
     private final String message;
     private final T data;
+
     public static final RespWrapper<?> SUCCESS = new RespWrapper<>(ResCodeEnum.Success.getCode(), null, null);
     
     public static <T> RespWrapper<T> success(T data) {
