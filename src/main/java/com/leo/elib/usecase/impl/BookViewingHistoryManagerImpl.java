@@ -73,7 +73,7 @@ public class BookViewingHistoryManagerImpl implements BookViewingHistoryManager 
           // 必须满足 userId 一致
           .filter(f -> f.term(t -> t.field(BookViewingHistory.userIdFieldName).value(userId)))
           // 必须满足日期在最近30天内
-          .filter(f -> f.range(r -> r.field(BookViewingHistory.timeFieldName).gte(JsonData.fromJson("\""+"2024-07-28T23:59:00.000"+"\""))))
+          .filter(f -> f.range(r -> r.field(BookViewingHistory.timeFieldName).gte(JsonData.fromJson("\""+earliestTime+"\""))))
           // 对 title, authorNames, publisherName 字段进行模糊匹配
           .must(m -> m.multiMatch(mm -> mm
             .fields(BookViewingHistory.worthSearchFriendlyFields)  // 查询的字段

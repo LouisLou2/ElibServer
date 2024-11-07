@@ -56,7 +56,6 @@ public class BookCacheImpl implements BookCache {
                         e -> Short.parseShort(e.getKey()),
                         e -> Objects.requireNonNull(e.getValue()).toString()
                       ));
-    var it = opsForHash.get(bookTagWholeHashCont, "22");
     tagMap = opsForHash.entries(bookTagWholeHashCont)
                       .entrySet()
                       .stream()
