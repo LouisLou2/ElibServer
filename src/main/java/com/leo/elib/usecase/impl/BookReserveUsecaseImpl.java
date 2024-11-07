@@ -4,6 +4,7 @@ import com.leo.elib.comp_struct.NullablePair;
 import com.leo.elib.constant.ResCodeEnum;
 import com.leo.elib.constant.book.LibBookStatus;
 import com.leo.elib.constant.book.ReservationStatus;
+import com.leo.elib.constant.user.UserReserveBookBehavior;
 import com.leo.elib.entity.dto.dao.ReserveBriefRecord;
 import com.leo.elib.mapper.LibBorrowMapper;
 import com.leo.elib.mapper.ReservationMapper;
@@ -32,6 +33,7 @@ public class BookReserveUsecaseImpl implements BookReserveUsecase {
   private static NullablePair<ResCodeEnum,String> reserveSuccess = NullablePair.of(ResCodeEnum.Success);
   private static NullablePair<ResCodeEnum,String> reserveFailed = NullablePair.of(ResCodeEnum.ReserveFailed);
 
+  @UserReserveBookBehavior
   @Override
   public NullablePair<ResCodeEnum,String> reserveBook(int userId, int libId, String isbn, LocalDateTime pickUpTime) {
     // 检查用户是否有预约书籍的资格

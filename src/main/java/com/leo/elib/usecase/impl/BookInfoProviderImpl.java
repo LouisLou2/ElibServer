@@ -10,6 +10,7 @@ import com.leo.elib.mapper.AuthorMapper;
 import com.leo.elib.mapper.BookInfoMapper;
 import com.leo.elib.mapper.LibBorrowMapper;
 import com.leo.elib.service.specific.inter.RecoBookProvider;
+import com.leo.elib.service.specific.inter.cache.ChartsBookCacheExecutor;
 import com.leo.elib.service.specific.inter.cache.static_type.BookInfoCacheManager;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
@@ -32,9 +33,18 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   @Resource
   private BookInfoCacheManager bInfoCache;
 
+  @Resource
+  private ChartsBookCacheExecutor chartsBookCache;
+
   @Override
   public BookInfo getBookInfo(String isbn) {
-    BookInfo bi = bookInfoMapper.getBookInfoWithoutLibs(isbn);
+    BookInfo bi = chartsBookCache.getBookWithoutLibs(isbn);
+    if (bi == null) {
+      bi = bookInfoMapper.getBookInfoWithoutLibs(isbn);
+    }
+    if (bi == null) {
+      return null;
+    }
     List<SimpleLib> libs = libBorrowMapper.getLibsWithStatus(
       isbn,
       LibBookStatus.Available.getCode()
@@ -42,15 +52,6 @@ public class BookInfoProviderImpl implements BookInfoProvider {
     bi.setAvailableLibs(libs);
     bInfoCache.setBookInfoCachedFields(bi);
     return bi;
-  }
-
-  @Override
-  public List<BookInfo> debug_getBooksByIsbn(int offset, int num) {
-    List<BookInfo> bookInfos = bookInfoMapper.debug_getBookInfo(offset, num);
-    for (BookInfo bi : bookInfos) {
-      bInfoCache.setBookInfoCachedFields(bi);
-    }
-    return bookInfos;
   }
 
   @Override
@@ -76,5 +77,16 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   @Override
   public List<BookBrief> getBooksByAuthor(int authorId, int offset, int num) {
     return bookInfoMapper.getAuthorBooks(authorId, offset, num);
+  }
+
+
+
+  @Override
+  public List<BookInfo> debug_getBooksByIsbn(int offset, int num) {
+    List<BookInfo> bookInfos = bookInfoMapper.debug_getBookInfo(offset, num);
+    for (BookInfo bi : bookInfos) {
+      bInfoCache.setBookInfoCachedFields(bi);
+    }
+    return bookInfos;
   }
 }

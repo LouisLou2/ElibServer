@@ -71,6 +71,7 @@ public class TrendingBookMangerImpl implements TrendingBookManager {
     int score = bookPopCalc.calcPopularity(behavior);
     // 使用 ZSet 的 incrementScore 方法来实现：如果 ZSet 已经包含此元素，就增加分数，如果没有则新增元素
     opsForZSet.incrementScore(trendingBookCont, isbn, score);
+    System.out.println("reportUserBehavior: " + isbn + " " + behavior);
   }
 
   @Override
