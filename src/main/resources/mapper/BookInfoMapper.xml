@@ -28,6 +28,7 @@
     </resultMap>
     
     <resultMap id="BookBriefMap" type="BookBrief" autoMapping="true">
+        <id column="isbn" property="isbn"/>
         <result column="publisher_name" property="publisherName"/>
         <result column="cover_s_url" property="coverSUrl"/>
         <result column="cover_m_url" property="coverMUrl"/>
@@ -38,7 +39,7 @@
     </resultMap>
     
     <resultMap id="AuthorWithBooks" type="AuthorWithBookLis" autoMapping="true">
-        <result column="target_author_id" property="authorId"/>
+        <id column="target_author_id" property="authorId"/>
         <result column="target_author_name" property="name"/>
         <result column="target_author_desc" property="desc"/>
         <result column="target_author_book_count" property="bookCount"/>
@@ -95,7 +96,7 @@
         inner join author a on ba.author_id = a.author_id
     </sql>
 
-    <select id="getBookInfoByIsbn" resultMap="BookInfoMap">
+    <select id="getBookInfoWithoutLibs" resultMap="BookInfoMap">
         select bi.isbn,
                bi.title,
                bi.original_title,
@@ -151,7 +152,7 @@
                     where subcategory_id = #{cateId}
                 </otherwise>
             </choose>
-            order by rating
+            order by rating desc
             limit #{num} offset #{offset}
         ) bi
         inner join publisher p on bi.publisher_id = p.publisher_id
@@ -215,6 +216,68 @@
         inner join author a on ba.author_id = a.author_id
     </select>
 
+    <select id="getBookBriefsByRating" resultMap="BookBriefMap">
+        <include refid="BriefBookFields"/>
+        from (
+            select
+            book_info.isbn as isbn,
+            title,
+            publisher_id,
+            cover_s_url,
+            cover_m_url,
+            rating,
+            ebook_url
+            from book_info
+            order by rating desc
+            limit #{num} offset #{offset}
+        ) bi
+        inner join publisher p on bi.publisher_id = p.publisher_id
+        inner join book_author ba on bi.isbn = ba.isbn
+        inner join author a on ba.author_id = a.author_id
+    </select>
+
+    <select id="getBookInfoWithoutLibsList" resultMap="BookInfoMap">
+        select bi.isbn,
+               bi.title,
+               bi.original_title,
+               bi.publisher_id,
+               p.publisher_name,
+               bi.pub_date,
+               bi.`desc`,
+               bi.word_count,
+               bi.lang_id,
+               bi.cover_s_url,
+               bi.cover_m_url,
+               bi.cover_l_url,
+               bi.rating,
+               bi.ebook_url,
+               bi.category_id,
+               bi.subcategory_id,
+               a.author_id,
+               a.name as author_name,
+               btc.tag_id
+        from book_info bi
+                 inner join publisher p on bi.publisher_id = p.publisher_id
+                 inner join book_author ba on bi.isbn = ba.isbn
+                 inner join author a on ba.author_id = a.author_id
+                 left  join book_tag_cor btc on bi.isbn = btc.isbn
+        where bi.isbn in
+        <foreach collection="isbns" item="isbn" open="(" close=")" separator=",">
+            #{isbn}
+        </foreach>
+    </select>
+
+    <select id="debug_getIsbnsByTime" resultType="java.lang.String">
+        select isbn
+        from book_info
+        order by pub_date desc
+        limit #{num} offset #{offset}
+    </select>
+
+
+
+
+
     <select id="debug_getBookInfo" resultMap="BookInfoMap">
         select bi.isbn,
                bi.title,
@@ -236,14 +299,49 @@
                a.name as author_name,
                btc.tag_id
         from (
-                select *
-                from book_info
-                limit #{num} offset #{offset}
+                 select *
+                 from book_info
+                          limit #{num} offset #{offset}
              ) as bi
-         inner join publisher p on bi.publisher_id = p.publisher_id
-         inner join book_author ba on bi.isbn = ba.isbn
-         inner join author a on ba.author_id = a.author_id
-         left  join book_tag_cor btc on bi.isbn = btc.isbn
+                 inner join publisher p on bi.publisher_id = p.publisher_id
+                 inner join book_author ba on bi.isbn = ba.isbn
+                 inner join author a on ba.author_id = a.author_id
+                 left  join book_tag_cor btc on bi.isbn = btc.isbn
     </select>
 
 </mapper>
+
+
+
+
+<!--<select id="getBooksByRating" resultMap="BookInfoMap">-->
+<!--select bi.isbn,-->
+<!--       bi.title,-->
+<!--       bi.original_title,-->
+<!--       bi.publisher_id,-->
+<!--       p.publisher_name,-->
+<!--       bi.pub_date,-->
+<!--       bi.`desc`,-->
+<!--       bi.word_count,-->
+<!--       bi.lang_id,-->
+<!--       bi.cover_s_url,-->
+<!--       bi.cover_m_url,-->
+<!--       bi.cover_l_url,-->
+<!--       bi.rating,-->
+<!--       bi.ebook_url,-->
+<!--       bi.category_id,-->
+<!--       bi.subcategory_id,-->
+<!--       a.author_id,-->
+<!--       a.name as author_name,-->
+<!--       btc.tag_id-->
+<!--from (-->
+<!--         select *-->
+<!--         from book_info-->
+<!--         order by rating desc-->
+<!--             limit #{num}-->
+<!--     ) as bi-->
+<!--         inner join publisher p on bi.publisher_id = p.publisher_id-->
+<!--         inner join book_author ba on bi.isbn = ba.isbn-->
+<!--         inner join author a on ba.author_id = a.author_id-->
+<!--         left  join book_tag_cor btc on bi.isbn = btc.isbn-->
+<!--</select>-->

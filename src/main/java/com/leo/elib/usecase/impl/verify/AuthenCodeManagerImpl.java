@@ -1,8 +1,8 @@
 package com.leo.elib.usecase.impl.verify;
 
 import com.leo.elib.constant.AuthenCodeType;
-import com.leo.elib.service.specific.inter.spec_cache.CaptchaCache;
-import com.leo.elib.service.specific.inter.spec_cache.VerifyCodeCache;
+import com.leo.elib.service.specific.inter.cache.CaptchaCache;
+import com.leo.elib.service.specific.inter.cache.VerifyCodeCache;
 import com.leo.elib.usecase.inter.verify.AuthenCodeGenerator;
 import com.leo.elib.usecase.inter.verify.AuthenCodeManager;
 import jakarta.annotation.Resource;

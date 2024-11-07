@@ -1,7 +1,7 @@
 package com.leo.elib.usecase.impl;
 
 import com.leo.elib.constant.AuthenCodeType;
-import com.leo.elib.service.inter.EmailSevice;
+import com.leo.elib.service.base_service.inter.EmailSevice;
 import com.leo.elib.service.specific.inter.EmailContentProvider;
 import com.leo.elib.usecase.inter.Notifier;
 import com.leo.elib.usecase.inter.verify.AuthenCodeManager;

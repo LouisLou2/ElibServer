@@ -1,6 +1,6 @@
 package com.leo.elib.preset;
 
-import com.leo.elib.service.inter.RCacheManager;
+import com.leo.elib.service.base_service.inter.RCacheManager;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;

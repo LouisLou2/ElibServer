@@ -108,10 +108,18 @@ container:
       clean-interval-ms: 3600000 # 1 hour
     chart:
       trending_book_zset: elib:zset:trending_book
+#      high_rating_book_zset: elib:zset:high_rating_book
       trending_author_zset: elib:zset:trending_author
-    popular_cache:
-      book: elib:hash:popular_book
-      author: elib:hash:popular_author
+    chart_cache:
+      book:
+        cont-name: elib:hash:popular_book
+        max_capacity: 3000
+      author:
+        cont-name: elib:hash:popular_author
+        max_capacity: 1000
+    announcement:
+      cont-name: elib:list:announcement
+      max_capacity: 1000
 
 authen:
   verify:
@@ -153,3 +161,15 @@ sys_setting:
       tap: 1
       collect: 3
       reserve: 6
+
+  chart:
+    trending_book:
+      list_size: 200 #榜单最多200本书
+      popularity_decay_rate: 0.95 #每天衰减5%
+    high_rating_book:
+      list_size: 200
+    trending_author:
+      list_size: 100
+
+  announcement:
+    update-when-reboot: true #服务器重启时缓存从数据库更新

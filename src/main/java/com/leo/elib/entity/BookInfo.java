@@ -1,6 +1,7 @@
 package com.leo.elib.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.leo.elib.entity.dto.dao.BookBrief;
 import com.leo.elib.entity.dto.dao.SimpleLib;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,5 +67,18 @@ public class BookInfo {
         this.category1Name = category1Name;
         this.category2Name = category2Name;
         this.tagNames = tagNames;
+    }
+
+    public BookBrief toBrief() {
+        return new BookBrief(
+          isbn,
+          title,
+          authorNames,
+          publisherName,
+          coverSUrl,
+          coverMUrl,
+          rating,
+          ebookUrl != null
+        );
     }
 }

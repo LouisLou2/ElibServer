@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.elib.mapper.AnnounMapper">
+
+    <resultMap id="announMap" type="Announcement">
+        <id property="announcementId" column="announcement_id"/>
+        <result property="sendingTime" column="sending_time"/>
+        <result property="expiryTime" column="expiry_time"/>
+        <result property="editorId" column="editor_id"/>
+    </resultMap>
+
+    <insert id="insertAnnoun">
+        insert into announcement (announcement_id, sending_time, expiry_time, title, content, category, editor_id, cover)
+        values (#{announ.announcementId},
+                #{announ.time},
+                #{announ.expiryTime},
+                #{announ.title},
+                #{announ.content},
+                #{announ.category},
+                #{announ.editorId},
+                #{announ.cover})
+    </insert>
+
+<!--    <select id="getAnnounsExpiryTimeAfter" resultMap="announMap">-->
+<!--        select * from announcement where expiry_time > #{atime}-->
+<!--        order by time desc-->
+<!--        limit #{num} offset #{offset}-->
+<!--    </select>-->
+
+    <select id="getLatestAnnouns" resultMap="announMap">
+        select * from announcement
+        order by sending_time desc
+        limit #{num} offset #{offset}
+    </select>
+</mapper>

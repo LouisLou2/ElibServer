@@ -7,7 +7,7 @@ package com.leo.elib.filter;
 import com.leo.elib.comp_struct.Expected;
 import com.leo.elib.comp_struct.TokenInfo;
 import com.leo.elib.constant.TokenRes;
-import com.leo.elib.service.inter.PathManager;
+import com.leo.elib.service.base_service.inter.PathManager;
 import com.leo.elib.usecase.inter.AuthTokenManager;
 import jakarta.annotation.Resource;
 import jakarta.servlet.*;

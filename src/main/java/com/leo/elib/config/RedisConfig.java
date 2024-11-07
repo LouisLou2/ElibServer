@@ -29,10 +29,10 @@ public class RedisConfig {
 
         // 使用带 ObjectMapper 的构造器
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(mapper, Object.class);
-
+        StringRedisSerializer strSerializer = new StringRedisSerializer();
         // 设置 Redis 键和值的序列化方式
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setKeySerializer(strSerializer);
+        template.setHashKeySerializer(strSerializer);
         template.setValueSerializer(serializer);
         template.setHashValueSerializer(serializer);
 

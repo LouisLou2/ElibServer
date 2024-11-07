@@ -10,8 +10,8 @@ import com.leo.elib.entity.dto.dao.Author;
 import com.leo.elib.entity.dto.dao.Publisher;
 import com.leo.elib.entity.elastic.BookDetailedInfo;
 import com.leo.elib.mapper.*;
-import com.leo.elib.service.inter.EmailSevice;
-import com.leo.elib.service.inter.RCacheManager;
+import com.leo.elib.service.base_service.inter.EmailSevice;
+import com.leo.elib.service.base_service.inter.RCacheManager;
 import com.leo.elib.service.specific.inter.EmailContentProvider;
 import com.leo.elib.usecase.inter.AuthUsecase;
 import com.leo.elib.usecase.inter.BookInfoProvider;
@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -61,6 +62,17 @@ class ElibApplicationTests {
 
   @Autowired
   private AuthorMapper authorMapper;
+
+    @Test
+    void tes(){
+      List<Object> lis = new ArrayList<>();
+      lis.add("123");
+      lis.add(null);
+      lis.add("789");
+
+      List<String> res = (List<String>) (List<?>) lis;
+      System.out.println(res);
+    }
 
     @Test
     void contextLoads() {

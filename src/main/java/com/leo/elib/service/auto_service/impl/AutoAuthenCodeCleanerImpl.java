@@ -1,7 +1,7 @@
 package com.leo.elib.service.auto_service.impl;
 
 import com.leo.elib.service.auto_service.inter.AutoAnthenCodeCleaner;
-import com.leo.elib.service.inter.RCacheManager;
+import com.leo.elib.service.base_service.inter.RCacheManager;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;

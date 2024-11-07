@@ -5,9 +5,9 @@ import com.leo.elib.comp_struct.TokenInfo;
 import com.leo.elib.comp_struct.TokenPair;
 import com.leo.elib.constant.DeviceTypeEnum;
 import com.leo.elib.constant.TokenRes;
-import com.leo.elib.service.specific.inter.spec_cache.JwtCache;
+import com.leo.elib.service.specific.inter.cache.JwtCache;
 import com.leo.elib.usecase.inter.AuthTokenManager;
-import com.leo.elib.service.inter.JwtTokenEndecoder;
+import com.leo.elib.service.base_service.inter.JwtTokenEndecoder;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

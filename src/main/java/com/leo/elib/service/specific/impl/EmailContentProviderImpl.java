@@ -1,7 +1,7 @@
 package com.leo.elib.service.specific.impl;
 
 import com.leo.elib.config.ServiceConstConfig;
-import com.leo.elib.service.inter.RCacheManager;
+import com.leo.elib.service.base_service.inter.RCacheManager;
 import com.leo.elib.service.specific.inter.EmailContentProvider;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;

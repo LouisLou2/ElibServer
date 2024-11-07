@@ -9,12 +9,10 @@ import com.leo.elib.entity.dto.dao.SimpleLib;
 import com.leo.elib.mapper.AuthorMapper;
 import com.leo.elib.mapper.BookInfoMapper;
 import com.leo.elib.mapper.LibBorrowMapper;
-import com.leo.elib.service.specific.inter.spec_cache.BookCache;
-import com.leo.elib.service.specific.inter.spec_cache.LangCache;
 import com.leo.elib.service.specific.inter.RecoBookProvider;
+import com.leo.elib.service.specific.inter.cache.static_type.BookInfoCacheManager;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,33 +25,22 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   private AuthorMapper authorMapper;
   @Resource
   private LibBorrowMapper libBorrowMapper;
-  @Resource
-  private BookCache bookCache;
-  @Resource
-  private LangCache langCache;
+
   @Resource
   private RecoBookProvider recoBookProv;
-  
-  private void setBookInfoCachedFields(BookInfo bookInfo) {
-    Pair<String,String> categoryNamePair = bookCache.getCategoryName(bookInfo.getCategory1(), bookInfo.getCategory2());
-    List<String> tagNames = bookCache.getTagNames(bookInfo.getTagIds());
-    bookInfo.setNames(
-      langCache.getLangName((byte) bookInfo.getLangId()),
-      categoryNamePair.getFirst(),
-      categoryNamePair.getSecond(),
-      tagNames
-    );
-  }
+
+  @Resource
+  private BookInfoCacheManager bInfoCache;
 
   @Override
   public BookInfo getBookInfo(String isbn) {
-    BookInfo bi = bookInfoMapper.getBookInfoByIsbn(isbn);
+    BookInfo bi = bookInfoMapper.getBookInfoWithoutLibs(isbn);
     List<SimpleLib> libs = libBorrowMapper.getLibsWithStatus(
-      isbn, 
+      isbn,
       LibBookStatus.Available.getCode()
     );
     bi.setAvailableLibs(libs);
-    setBookInfoCachedFields(bi);
+    bInfoCache.setBookInfoCachedFields(bi);
     return bi;
   }
 
@@ -61,7 +48,7 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   public List<BookInfo> debug_getBooksByIsbn(int offset, int num) {
     List<BookInfo> bookInfos = bookInfoMapper.debug_getBookInfo(offset, num);
     for (BookInfo bi : bookInfos) {
-      setBookInfoCachedFields(bi);
+      bInfoCache.setBookInfoCachedFields(bi);
     }
     return bookInfos;
   }
