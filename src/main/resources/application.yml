@@ -55,10 +55,10 @@ mybatis:
 #    book_detail_info:
 #      index_name: book_detailed_info
 es:
-  host: 111.230.63.174
+  host: 127.0.0.1 # 111.230.63.174
   port: 9200
   https:
-    enabled: true
+    enabled: false
     insecure: true
   username: elastic
   password: M5_nODOEc=Xmb30kJRTS

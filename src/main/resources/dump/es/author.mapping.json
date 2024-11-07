@@ -1,0 +1,1 @@
+{"author":{"mappings":{"properties":{"_class":{"type":"keyword","index":false,"doc_values":false},"authorId":{"type":"keyword"},"bookCount":{"type":"integer","index":false},"desc":{"type":"text"},"name":{"type":"text"}}}}}

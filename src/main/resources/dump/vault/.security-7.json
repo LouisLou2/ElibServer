@@ -1,0 +1,1 @@
+{"_index":".security-7","_id":"reserved-user-elastic","_score":1,"_source":{"password":"$2a$10$JHJGYNH/oBhHe/1n.4IbsO7bnC405EtsSYoQmbE7i/uGyu3ytlOeC","enabled":true,"type":"reserved-user"}}

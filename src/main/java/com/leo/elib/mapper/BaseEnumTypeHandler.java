@@ -12,9 +12,7 @@ public class BaseEnumTypeHandler <E extends BaseCodeEnum> extends BaseTypeHandle
   private final E[] enums;
 
   public BaseEnumTypeHandler(E instance) {
-    if (instance == null) {
-      throw new IllegalArgumentException("Type argument cannot be null");
-    }
+    assert instance != null;
     enums = (E[]) instance.getCodeEnums();
   }
 
