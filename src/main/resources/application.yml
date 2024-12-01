@@ -43,17 +43,6 @@ mybatis:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-#es:
-#  host: es-cn-y1i3zlquw000635jb.public.elasticsearch.aliyuncs.com
-#  port: 9200
-#  https:
-#    enabled: false
-#    insecure: true
-#  username: elastic
-#  password: Lou200499
-#  doc:
-#    book_detail_info:
-#      index_name: book_detailed_info
 es:
   host: 127.0.0.1 # 111.230.63.174
   port: 9200
@@ -61,7 +50,7 @@ es:
     enabled: false
     insecure: true
   username: elastic
-  password: M5_nODOEc=Xmb30kJRTS
+  password: pID0NMCuD5p363Qdii23
   doc:
     book_detail_info:
       index_name: book_detailed_info
@@ -75,22 +64,13 @@ es:
 
 async:
   thread-pool:
-    core-pool-size: 2
+    core-pool-size: 5
     max-pool-size: 10
-    queue-capacity: 25
+    queue-capacity: 1000
     keep-alive-seconds: 60
     thread-name-prefix: async-service-
     await-termination-seconds: 30
 
-#container:
-#  redis:
-#    at_hash: elib:hash:at
-#    rt_hash: elib:hash:rt
-#    book_category_hash: elib:hash:book_cate
-#    book_tag_hash_name: elib:hash:book_tag:name
-#    book_tag_hash_whole: elib:hash:book_tag:whole
-#
-#    content_hash: elib:hash:content
 container:
   redis:
     token:
@@ -132,13 +112,13 @@ authen:
 jwt:
   at_secret: secretForElibAT
   rt_secret: secretForElibRT
-  at_expiration: 3600
+  at_expiration: 43200
   rt_expiration: 43200
 
 path:
   filterExcludes: 
-    - /auth
-    - /api/book_info
+    - /api/user/auth
+    - /api/user/book_chart
 
 sys_setting:
   bookshelf:
@@ -172,4 +152,7 @@ sys_setting:
       list_size: 100
 
   announcement:
-    update-when-reboot: true #服务器重启时缓存从数据库更新
+    use-application-cache:
+      enable: true #是否启用应用级别缓存, true会弃用redis缓存, 直接使用内存缓存
+      max-capacity: 1000 #最多缓存1000条公告
+    update-when-reboot: true #服务器重启时缓存从数据库更新, 这只对于redis缓存有效

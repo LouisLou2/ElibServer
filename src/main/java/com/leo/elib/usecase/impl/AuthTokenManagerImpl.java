@@ -28,7 +28,7 @@ public class AuthTokenManagerImpl implements AuthTokenManager {
         var version = jwtCache.getVersion(tokenType, tokenInfo.getUserId(), tokenInfo.getDeviceType());
         // 这里几乎不可能有null的情况，因为createAT一定会设置version
         assert version != null; // 这个在debug阶段先用着
-        if (version == null || version != tokenInfo.getVersion()) {
+        if (version != tokenInfo.getVersion()) {
             return Expected.error(TokenRes.TokenNotInUse);
         }
         return Expected.success(tokenInfo);
@@ -47,19 +47,6 @@ public class AuthTokenManagerImpl implements AuthTokenManager {
         // 对于AT的设置，如果缓存中没有version,自然新插入，如果原来有，也不会变动version
         return jwtTokenEndecoder.createToken(true, userId, deviceType, res.getFirst());
     }
-
-    //@Override
-    //public String createRTAndRefresh(int userId, DeviceTypeEnum deviceType) {
-    //    // 先找到缓存中的version
-    //    var res = jwtCache.getVersionSetIfAbsent(false, userId, deviceType);
-    //    if (res.getSecond()) {
-    //        // 如果是新建的，就直接返回
-    //        return jwtTokenEndecoder.createToken(false, userId, deviceType, res.getFirst());
-    //    }
-    //    // 如果不是新建的，就先刷新version
-    //    jwtCache.incAllVersion(userId, deviceType);
-    //    return jwtTokenEndecoder.createToken(false, userId, deviceType, res.getFirst() + 1);
-    //}
 
     @Override
     public TokenPair refreshTokenPair(int userId, DeviceTypeEnum deviceType) {

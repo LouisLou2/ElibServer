@@ -42,6 +42,7 @@ public class TrendingBookMangerImpl implements TrendingBookManager {
   // 应用内的级别的缓存，重启后数据重新获取
   // 这里只是榜单的简略信息，没有使用BookInfo这个大对象
   private List<BookBrief> trendingBooks;
+
   private Set<String> trendingBookIsbn;
 
   @Resource
@@ -90,7 +91,7 @@ public class TrendingBookMangerImpl implements TrendingBookManager {
     int size = trendingBooks.size();
     int start = pageNum * pageSize;
     int end = start + pageSize;
-    if (start >= size) {
+    if (start > size) {
       return List.of();
     }
     if (end > size) {

@@ -8,11 +8,13 @@
         <result column="publisher_id" property="publisherId"/>
         <result column="publisher_name" property="publisherName"/>
         <result column="pub_date" property="pubDate"/>
+        <result column="short_desc" property="shortDesc"/>
         <result column="word_count" property="wordCount"/>
         <result column="lang_id" property="langId"/>
         <result column="cover_m_url" property="coverMUrl"/>
         <result column="cover_l_url" property="coverLUrl"/>
         <result column="cover_s_url" property="coverSUrl"/>
+        <result column="cover_dom_color" property="coverDomColor" javaType="long"/>
         <result column="ebook_url" property="ebookUrl"/>
         <result column="category_id" property="category1" javaType="int"/>
         <result column="subcategory_id" property="category2" javaType="int"/>
@@ -29,9 +31,11 @@
     
     <resultMap id="BookBriefMap" type="BookBrief" autoMapping="true">
         <id column="isbn" property="isbn"/>
+        <result column="short_desc" property="shortDesc"/>
         <result column="publisher_name" property="publisherName"/>
         <result column="cover_s_url" property="coverSUrl"/>
         <result column="cover_m_url" property="coverMUrl"/>
+        <result column="cover_dom_color" property="coverDomColor" javaType="long"/>
         <result column="has_ebook" property="hasEbook"/>
         <collection property="authorNames" ofType="String" javaType="java.util.List">
             <result column="author_name"/>
@@ -46,43 +50,45 @@
         <collection property="books" ofType="BookBrief" resultMap="BookBriefMap"/>
     </resultMap>
     
-    <sql id="bookInfoFields">
-        select bi.isbn,
-               bi.title,
-               bi.original_title,
-               bi.publisher_id,
-               p.publisher_name,
-               bi.pub_date,
-               bi.`desc`,
-               bi.word_count,
-               bi.lang_id,
-               bi.cover_s_url,
-               bi.cover_m_url,
-               bi.cover_l_url,
-               bi.rating,
-               IF(bi.ebook_url is null, false, true) as has_ebook,
-               bi.category_id,
-               bi.subcategory_id,
-               a.author_id,
-               a.name as author_name,
-               btc.tag_id
-    </sql>
+<!--    <sql id="bookInfoFields">-->
+<!--        select bi.isbn,-->
+<!--               bi.title,-->
+<!--               bi.original_title,-->
+<!--               bi.publisher_id,-->
+<!--               p.publisher_name,-->
+<!--               bi.pub_date,-->
+<!--               bi.`desc`,-->
+<!--               bi.word_count,-->
+<!--               bi.lang_id,-->
+<!--               bi.cover_s_url,-->
+<!--               bi.cover_m_url,-->
+<!--               bi.cover_l_url,-->
+<!--               bi.rating,-->
+<!--               IF(bi.ebook_url is null, false, true) as has_ebook,-->
+<!--               bi.category_id,-->
+<!--               bi.subcategory_id,-->
+<!--               a.author_id,-->
+<!--               a.name as author_name,-->
+<!--               btc.tag_id-->
+<!--    </sql>-->
 
-    <sql id="getBookInfo">
-        <include refid="bookInfoFields"/>
-        from book_info bi
-        inner join publisher p on bi.publisher_id = p.publisher_id
-        inner join book_author ba on bi.isbn = ba.isbn
-        inner join author a on ba.author_id = a.author_id
-        left  join book_tag_cor btc on bi.isbn = btc.isbn
-    </sql>
+<!--    <sql id="getBookInfo">-->
+<!--        <include refid="bookInfoFields"/>-->
+<!--        from book_info bi-->
+<!--        inner join publisher p on bi.publisher_id = p.publisher_id-->
+<!--        inner join book_author ba on bi.isbn = ba.isbn-->
+<!--        inner join author a on ba.author_id = a.author_id-->
+<!--        left  join book_tag_cor btc on bi.isbn = btc.isbn-->
+<!--    </sql>-->
     
     <sql id="BriefBookFields">
         select bi.isbn,
                bi.title,
+               bi.short_desc,
                p.publisher_name,
                bi.cover_s_url,
                bi.cover_m_url,
+               bi.cover_dom_color,
                bi.rating,
                IF(bi.ebook_url is null, false, true) as has_ebook,
                a.name as author_name
@@ -96,6 +102,8 @@
         inner join author a on ba.author_id = a.author_id
     </sql>
 
+
+
     <select id="getBookInfoWithoutLibs" resultMap="BookInfoMap">
         select bi.isbn,
                bi.title,
@@ -104,11 +112,13 @@
                p.publisher_name,
                bi.pub_date,
                bi.`desc`,
+               bi.short_desc,
                bi.word_count,
                bi.lang_id,
                bi.cover_s_url,
                bi.cover_m_url,
                bi.cover_l_url,
+               bi.cover_dom_color,
                bi.rating,
                bi.ebook_url,
                bi.category_id,
@@ -141,6 +151,8 @@
                 publisher_id,
                 cover_s_url,
                 cover_m_url,
+                cover_dom_color,
+                short_desc,
                 rating,
                 ebook_url
             from book_info
@@ -169,6 +181,8 @@
                 publisher_id,
                 cover_s_url,
                 cover_m_url,
+                cover_dom_color,
+                short_desc,
                 rating,
                 ebook_url
             from book_author
@@ -203,6 +217,8 @@
                 publisher_id,
                 cover_s_url,
                 cover_m_url,
+                cover_dom_color,
+                short_desc,
                 rating,
                 ebook_url
             from book_author
@@ -225,6 +241,8 @@
             publisher_id,
             cover_s_url,
             cover_m_url,
+            cover_dom_color,
+            short_desc,
             rating,
             ebook_url
             from book_info
@@ -244,11 +262,13 @@
                p.publisher_name,
                bi.pub_date,
                bi.`desc`,
+               bi.short_desc,
                bi.word_count,
                bi.lang_id,
                bi.cover_s_url,
                bi.cover_m_url,
                bi.cover_l_url,
+               bi.cover_dom_color,
                bi.rating,
                bi.ebook_url,
                bi.category_id,
@@ -267,15 +287,27 @@
         </foreach>
     </select>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <select id="debug_getIsbnsByTime" resultType="java.lang.String">
         select isbn
         from book_info
         order by pub_date desc
         limit #{num} offset #{offset}
     </select>
-
-
-
 
 
     <select id="debug_getBookInfo" resultMap="BookInfoMap">
@@ -286,11 +318,13 @@
                p.publisher_name,
                bi.pub_date,
                bi.`desc`,
+               bi.short_desc,
                bi.word_count,
                bi.lang_id,
                bi.cover_s_url,
                bi.cover_m_url,
                bi.cover_l_url,
+               bi.cover_dom_color,
                bi.rating,
                bi.ebook_url,
                bi.category_id,
@@ -301,13 +335,39 @@
         from (
                  select *
                  from book_info
-                          limit #{num} offset #{offset}
+                 limit #{num} offset #{offset}
              ) as bi
                  inner join publisher p on bi.publisher_id = p.publisher_id
                  inner join book_author ba on bi.isbn = ba.isbn
                  inner join author a on ba.author_id = a.author_id
                  left  join book_tag_cor btc on bi.isbn = btc.isbn
     </select>
+
+    <select id="debug_getTmpBookCover" resultType="com.leo.elib.entity.TmpBookCover">
+        select isbn, cover_s_url as coverUrl
+        from book_info
+        limit #{num} offset #{offset}
+    </select>
+    <select id="dev_getIsbn" resultType="java.lang.String">
+        select isbn
+        from book_info
+        limit #{num} offset #{offset}
+    </select>
+
+    <update id="debug_setColor">
+        update book_info
+        set cover_dom_color = #{color}
+        where isbn = #{isbn}
+    </update>
+
+    <update id="debug_setTmpBookCoverAndShortDesc">
+        update book_info
+        set cover_s_url = #{coverUrl},
+            cover_m_url = #{coverUrl},
+            cover_l_url = #{coverUrl},
+            short_desc = #{shortDesc}
+        where isbn = #{isbn}
+    </update>
 
 </mapper>
 

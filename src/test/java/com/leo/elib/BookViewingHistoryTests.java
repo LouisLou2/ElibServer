@@ -1,6 +1,8 @@
 package com.leo.elib;
 
+import com.leo.elib.entity.BookInfo;
 import com.leo.elib.entity.BookViewingHistory;
+import com.leo.elib.mapper.BookInfoMapper;
 import com.leo.elib.usecase.inter.BookViewingHistoryManager;
 import com.leo.elib.util.SearchHintTranfer;
 import jakarta.annotation.Resource;
@@ -18,6 +20,7 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -31,6 +34,9 @@ public class BookViewingHistoryTests {
 
   @Autowired
   private ElasticsearchOperations esOperations;
+
+  @Resource
+  private BookInfoMapper bookInfoMapper;
 
   @Test
   void deleteIndexAndCreate() {
@@ -52,21 +58,42 @@ public class BookViewingHistoryTests {
     }
   }
 
+//  @Test
+//  void insertViewingHistory() {
+//    BookViewingHistory history1 = new BookViewingHistory(10003, "000100039X", "Dart Apprentice", List.of("Kahlil Gibran","Robin Hobb"), "开发区世创科技有限公司出版社", LocalDateTime.now(),"https://m.media-amazon.com/images/I/61KQ4EoU3IS._SL1360_.jpg");
+//    BookViewingHistory history2 = new BookViewingHistory(10003, "000649885X", "Ship of Magic (Liveship Traders, #1)", List.of("Robin Hobb"), "诺依曼软件传媒有限公司出版社", LocalDateTime.now().minusDays(100),"https://images.gr-assets.com/books/1360507722s/45100.jpg");
+//    BookViewingHistory history3 = new BookViewingHistory(10002, "000649885X", "Ship of Magic (Liveship Traders, #1)", List.of("Robin Hobb"), "诺依曼软件传媒有限公司出版社", LocalDateTime.now().minusDays(100),"https://images.gr-assets.com/books/1360507722s/45100.jpg");
+//
+//    bookVHManager.addViewingHistory(history1);
+//    bookVHManager.addViewingHistory(history2);
+//    bookVHManager.addViewingHistory(history3);
+//
+//    // sleep
+//    try {
+//      Thread.sleep(7000); //上面的异步方法需要时间，所以这里等待一下，实际生产环境不需要
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
+//  }
+
   @Test
-  void insertViewingHistory() {
-     BookViewingHistory history1 = new BookViewingHistory(10003, "000100039X", "Dart Apprentice", List.of("Kahlil Gibran","Robin Hobb"), "开发区世创科技有限公司出版社", LocalDateTime.now());
-     BookViewingHistory history2 = new BookViewingHistory(10003, "000649885X", "Ship of Magic (Liveship Traders, #1)", List.of("Robin Hobb"), "诺依曼软件传媒有限公司出版社", LocalDateTime.now().minusDays(100));
-     BookViewingHistory history3 = new BookViewingHistory(10002, "000649885X", "Ship of Magic (Liveship Traders, #1)", List.of("Robin Hobb"), "诺依曼软件传媒有限公司出版社", LocalDateTime.now());
-
-      bookVHManager.addViewingHistory(history1);
-      bookVHManager.addViewingHistory(history2);
-
-      // sleep
-      try {
-        Thread.sleep(7000); //上面的异步方法需要时间，所以这里等待一下，实际生产环境不需要
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+  void insertViewingHistoryBatch() {
+    List< BookInfo > bookInfos = bookInfoMapper.debug_getBookInfo(0, 100);
+    List< BookViewingHistory > histories = new ArrayList<>();
+    for (int i =0;i<bookInfos.size();++i){
+      BookInfo bookInfo = bookInfos.get(i);
+      BookViewingHistory hist = new BookViewingHistory(10003, bookInfo.getIsbn(), bookInfo.getTitle(), bookInfo.getAuthorNames(), bookInfo.getPublisherName(), LocalDateTime.now().minusDays(2).minusMinutes(i * 5L),bookInfo.getCoverMUrl(), bookInfo.getCoverDomColor());
+      histories.add(hist);
+    }
+    // sleep
+    for (BookViewingHistory history : histories) {
+      bookVHManager.addViewingHistory(history);
+    }
+    try {
+      Thread.sleep(14000); //上面的异步方法需要时间，所以这里等待一下，实际生产环境不需要
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -93,4 +120,19 @@ public class BookViewingHistoryTests {
     List<BookViewingHistory> viewingHistory = bookVHManager.getViewingHistory(10003, "Robin", 0, 10);
     viewingHistory.forEach(System.out::println);
   }
+
+  @Test
+  void deleteACollection(){
+    IndexOperations indexOps = esTemp.indexOps(BookViewingHistory.class);
+    boolean exists = indexOps.exists();
+    if (exists){
+      boolean delete = indexOps.delete();
+      if (delete){
+        System.out.println("delete index success");
+      }else{
+        throw new RuntimeException("delete index failed");
+      }
+    }
+  }
+
 }

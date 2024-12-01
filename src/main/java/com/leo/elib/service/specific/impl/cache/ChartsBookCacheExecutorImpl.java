@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,8 +25,6 @@ public class ChartsBookCacheExecutorImpl implements ChartsBookCacheExecutor {
   private RCacheManager rCacheManager;
 
   private HashOperations<String, String, Object> opsForHash;
-
-
   private Set<String> cachedBooksIsbn;
 
   @PostConstruct
@@ -70,13 +69,13 @@ public class ChartsBookCacheExecutorImpl implements ChartsBookCacheExecutor {
   }
 
   @Override
-  public List<BookInfo> getBooksWithoutLibs(List<String> isbns) {
+  public Pair<List<BookInfo>,Boolean> getBooksWithoutLibs(List<String> isbns) {
     // 如果都不在，就没必要去缓存中取了，这里返回全都是null的List
     boolean allNotIn = isbns.stream().noneMatch(cachedBooksIsbn::contains);
     if (allNotIn) {
-      return Collections.nCopies(isbns.size(), null);
+      return Pair.of(Collections.nCopies(isbns.size(), null), true);
     }
     var res = opsForHash.multiGet(cacheCont, isbns);
-    return (List<BookInfo>) (List<?>) res;
+    return Pair.of((List<BookInfo>) (List<?>) res, false);
   }
 }

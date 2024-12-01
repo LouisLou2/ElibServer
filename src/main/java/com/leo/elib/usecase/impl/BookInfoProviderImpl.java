@@ -14,6 +14,7 @@ import com.leo.elib.service.specific.inter.cache.ChartsBookCacheExecutor;
 import com.leo.elib.service.specific.inter.cache.static_type.BookInfoCacheManager;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,8 +57,36 @@ public class BookInfoProviderImpl implements BookInfoProvider {
 
   @Override
   public List<BookBrief> getRecoBooks(int userId, int offset, int num) {
-    List<String> recoBookIsbns = recoBookProv.getRecoBookIsbns(userId,offset, num);
-    return bookInfoMapper.getBookBriefList(recoBookIsbns);
+    List<String> recoBookIsbns = recoBookProv.getRecoBookIsbns(userId, offset, num);
+
+    // 注意接下来的操作返回的BookBrief的顺序不一定与recoBookIsbns中的isbn顺序一致, 在这里是可以接受的
+    Pair<List<BookInfo>,Boolean> cacheRes = chartsBookCache.getBooksWithoutLibs(recoBookIsbns);
+    if (cacheRes.getSecond()) {
+      // 说明一个也没找到
+      // 干脆全部从数据库中查找
+      return bookInfoMapper.getBookBriefList(recoBookIsbns);
+    }
+    List<BookInfo> bookInfos = cacheRes.getFirst();
+    List<BookBrief> bookBriefs = new java.util.ArrayList<>(bookInfos.size());
+    List<Integer> nullIndexs = new java.util.ArrayList<>();
+    List<String> nullIsbns = new java.util.ArrayList<>();
+    for (int i = 0; i < bookInfos.size(); i++) {
+      BookInfo bi = bookInfos.get(i);
+      if (bi == null) {
+        nullIndexs.add(i);
+        nullIsbns.add(recoBookIsbns.get(i));
+        bookBriefs.add(null);
+      } else {
+        bookBriefs.add(bi.toBrief());
+      }
+    }
+    if (!nullIndexs.isEmpty()) {
+      List<BookBrief> nullBookBriefs = bookInfoMapper.getBookBriefList(nullIsbns);
+      for (int i = 0; i < nullIndexs.size(); i++) {
+        bookBriefs.set(nullIndexs.get(i), nullBookBriefs.get(i));
+      }
+    }
+    return bookBriefs;
   }
 
   /* 其中一个实现思路是直接在一个sql中查询出所有的信息(目前的视线较为复杂，且有临时表)

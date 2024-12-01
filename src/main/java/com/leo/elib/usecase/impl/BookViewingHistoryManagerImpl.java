@@ -38,7 +38,7 @@ public class BookViewingHistoryManagerImpl implements BookViewingHistoryManager 
   @Override
   public void addViewingHistory(BookViewingHistory history) {
     esOperations.save(history);
-    System.out.println("addViewingHistory success");
+    // System.out.println("addViewingHistory success");
   }
 
   @Override

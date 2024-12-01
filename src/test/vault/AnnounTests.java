@@ -26,11 +26,11 @@ public class AnnounTests {
   @Test
   public void testInsertAnnoun() {
     var it = amapper.getLatestAnnouns(5, 0);
-    for (var announ : it) {
-      announCache.insertAnnounAsLatest(announ);
-    }
-    // test get
-    var it2 = announCache.getLatestAnnoun(5, 0);
-    int x=0;
+//    for (var announ : it) {
+//      announCache.insertAnnounAsLatest(announ);
+//    }
+//    // test get
+//    var it2 = announCache.getLatestAnnoun(5, 0);
+//    int x=0;
   }
 }

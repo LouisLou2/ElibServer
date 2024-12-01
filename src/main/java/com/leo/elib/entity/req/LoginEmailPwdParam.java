@@ -6,11 +6,23 @@ import com.leo.elib.constant.DeviceTypeEnum;
 public class LoginEmailPwdParam {
   public String email;
   public String password;
-
   @JsonProperty("device_type")
   public DeviceTypeEnum deviceType;
-  
+  @JsonProperty("last_readed_announ_id")
+  public int lastReadedAnnounId;
+  @JsonProperty("viewing_history_page_num")
+  public int viewingHistoryPageSize;
+  @JsonProperty("reco_book_page_num")
+  public int recoBookPageSize;
+  @JsonProperty("chart_page_num")
+  public int chartPageSize;
+
   public boolean allSet() {
-    return email != null && password != null && deviceType != null;
+    return email != null &&
+        password != null &&
+        deviceType != null &&
+        lastReadedAnnounId >= 0 &&
+        viewingHistoryPageSize > 0 &&
+        recoBookPageSize > 0 && chartPageSize > 0;
   }
 }

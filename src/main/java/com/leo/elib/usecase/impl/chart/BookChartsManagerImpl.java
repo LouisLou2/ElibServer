@@ -10,6 +10,7 @@ import com.leo.elib.usecase.inter.chart.HighRatingBookChartManager;
 import com.leo.elib.usecase.inter.chart.TrendingBookManager;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -90,7 +91,8 @@ public class BookChartsManagerImpl implements BookChartsManager {
      * List<String> trendingBookIsbnList是需要的List<BookBrief>顺序，但是对应的资源可能一部分存在于缓存,一部分在books中，
      * 先去缓存探测，然后对元素位置为null的，到books中去找，找到就替换(按现在的逻辑，不肯呢个两处都找不到)
      */
-    List<BookInfo> trendingList = chartsBookCacheExecutor.getBooksWithoutLibs(trendingBookIsbnList);
+    Pair<List<BookInfo>, Boolean> cacheRes = chartsBookCacheExecutor.getBooksWithoutLibs(trendingBookIsbnList);
+    List<BookInfo> trendingList = cacheRes.getFirst();
     List<BookBrief> trendingBookBriefList = new ArrayList<>(trendingList.size());
     List<Integer> nullIndex = new ArrayList<>();
     for (int i=0;i<trendingList.size();i++){
@@ -107,7 +109,7 @@ public class BookChartsManagerImpl implements BookChartsManager {
       // 构建一个索引 Map，提前为每个 isbn 创建映射
       Map<String, BookInfo> bookInfoMap = books.stream()
         .collect(Collectors.toMap(BookInfo::getIsbn, book -> book));
-      for (int i:nullIndex) {
+      for (int i: nullIndex) {
         String isbn = trendingBookIsbnList.get(i);
         BookInfo info = bookInfoMap.get(isbn);
         assert info != null;

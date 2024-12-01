@@ -1,6 +1,8 @@
 package com.leo.elib.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.leo.elib.config.ServiceNetConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +18,8 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @Document(indexName = "book_viewing_history") // 设定索引名称
 public class BookViewingHistory {
 
@@ -33,6 +35,7 @@ public class BookViewingHistory {
   @Id
   private String id;
 
+  @JsonProperty("user_id")
   @Field(type = FieldType.Integer) // 用户ID是整数类型
   private int userId;
 
@@ -42,33 +45,37 @@ public class BookViewingHistory {
   @Field(type = FieldType.Text) // 书名是文本类型，允许分词
   private String title;
 
+  @JsonProperty("author_names")
   @Field(type = FieldType.Text) // 作者名字是文本类型，允许分词
   private List<String> authorNames;
 
+  @JsonProperty("publisher_name")
   @Field(type = FieldType.Text) // 出版社名字是文本类型
   private String publisherName;
 
+  @JsonProperty("viewing_time")
   @Field(type = FieldType.Date, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSS", format = {})
   private LocalDateTime viewingTime;
 
-  void setUserIdAndIsbn(int userId, String isbn) {
-    this.userId = userId;
-    this.isbn = isbn;
-    id = userId + ":" + isbn;
+  @JsonProperty("cover_m_url")
+  @Field(type = FieldType.Keyword, index = false) // 不参与索引
+  private String coverMUrl;
+
+  @JsonProperty("cover_dom_color")
+  @Field(type = FieldType.Long, index = false) // 不参与索引
+  private long coverDomColor;
+
+  @JsonIgnore
+  private boolean urlSet = false;
+
+  public void buildUrl() {
+    if (urlSet) return;
+    coverMUrl = ServiceNetConfig.equip(coverMUrl);
+    urlSet = true;
   }
 
-  public BookViewingHistory(int userId, String isbn, String title, List<String> authorNames, String publisherName, LocalDateTime viewingTime) {
-    this.userId = userId;
-    this.isbn = isbn;
-    this.title = title;
-    this.authorNames = authorNames;
-    this.publisherName = publisherName;
-    this.viewingTime = viewingTime;
-    id = userId + ":" + isbn;
-  }
-
-  public static String allowedTimeFormat(LocalDateTime t){
-    return formatter.format(t);
+  public static String allowedTimeFormat(LocalDateTime time) {
+    return time.format(formatter);
   }
 }
 

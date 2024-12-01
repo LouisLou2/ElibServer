@@ -20,6 +20,7 @@ public class NotifierImpl implements Notifier{
   @Override
   public void sendAndNoteEmailVerifyCode(String email) {
     String code = authenCodeManager.createAndCacheVerifyCode(email, AuthenCodeType.Email);
+    System.out.println("@@@@@@@@@@@@@验证码：" + code);
     String content = emailContentProvider.getEmailCodeTemForLogin(code);
     // send email
     emailSevice.sendHtmlEmail(email, "验证码", content);

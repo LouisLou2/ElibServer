@@ -3,6 +3,7 @@ package com.leo.elib;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.leo.elib.constant.DeviceTypeEnum;
 import com.leo.elib.constant.book.LibBookStatus;
 import com.leo.elib.entity.BookInfo;
 import com.leo.elib.entity.BookViewingHistory;
@@ -289,5 +290,14 @@ class ElibApplicationTests {
         System.out.println("create index success");
       }
     }
+  }
+
+  @Test
+  void testLogin(){
+    var res = authUsecase.loginEmailPwd(
+      "lskleo@163.com",
+        "abc123456",
+        DeviceTypeEnum.Mobile
+    );
   }
 }

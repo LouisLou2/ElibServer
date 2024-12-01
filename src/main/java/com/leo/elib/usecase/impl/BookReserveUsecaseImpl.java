@@ -42,39 +42,9 @@ public class BookReserveUsecaseImpl implements BookReserveUsecase {
       return res;
     }
     // 拿到一本书的唯一标识
-    Integer bookUnqId = libBorrowMapper.getOneBookUniqueId(
-      isbn, libId,
-      LibBookStatus.Available.getCode()
-    );
+    Integer bookUnqId = libBorrowMapper.markBookAsReserved(isbn, libId, LibBookStatus.Available.getCode(), LibBookStatus.Reserved.getCode());
     if (bookUnqId == null) {
       return reserveNotAvailable;
-    }
-    // 锁定这本书
-    int lockResult = libBorrowMapper.setStatusWithOriginalStatus(
-      bookUnqId,
-      LibBookStatus.Reserved.getCode(),
-      LibBookStatus.Available.getCode()
-    );
-    if (lockResult == 0) {
-      int tryTimes = 0;
-      while (lockResult == 0 && tryTimes < maxTry) {
-        bookUnqId = libBorrowMapper.getOneBookUniqueId(
-          isbn, libId,
-          LibBookStatus.Available.getCode()
-        );
-        if (bookUnqId == null) {
-          return reserveNotAvailable;
-        }
-        lockResult = libBorrowMapper.setStatusWithOriginalStatus(
-          bookUnqId,
-          LibBookStatus.Reserved.getCode(),
-          LibBookStatus.Available.getCode()
-        );
-        ++tryTimes;
-      }
-      if (lockResult == 0) {
-        return reserveFailed;
-      }
     }
     // 可以预约这本书
     reservationMapper.insertRecord(

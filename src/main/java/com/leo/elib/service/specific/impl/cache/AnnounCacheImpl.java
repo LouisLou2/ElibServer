@@ -58,4 +58,11 @@ public class AnnounCacheImpl implements AnnounCache {
     assert list != null;
     return (List<Announcement>) (List<?>) list;
   }
+
+  @Override
+  public boolean hasNew(int readedLatestId) {
+    // 由于是最新的在最前面，所以只需要比较最前面的一个
+    Announcement announ = (Announcement) opsForList.index(announCont, 0);
+    return announ != null && announ.getAnnouncementId() > readedLatestId;
+  }
 }

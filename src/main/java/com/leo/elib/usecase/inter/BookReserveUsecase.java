@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface BookReserveUsecase {
 
+  // first: ResCodeEnum, second: message
   NullablePair<ResCodeEnum,String> reserveBook(int userId, int libId, String isbn, LocalDateTime pickUpTime);
   ResCodeEnum cancelReservation(int userId, int reserveId, boolean confirm);
   List<ReserveBriefRecord> getReserved(int userId, ReservationStatus status, int offset, int num);

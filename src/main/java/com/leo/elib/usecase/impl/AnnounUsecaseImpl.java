@@ -2,11 +2,14 @@ package com.leo.elib.usecase.impl;
 
 import com.leo.elib.entity.dto.dao.Announcement;
 import com.leo.elib.mapper.AnnounMapper;
+import com.leo.elib.service.specific.impl.cache.AnnounCacheApplcationImpl;
+import com.leo.elib.service.specific.impl.cache.AnnounCacheImpl;
 import com.leo.elib.service.specific.inter.cache.AnnounCache;
 import com.leo.elib.usecase.inter.AnnounUsecase;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,21 +17,30 @@ import java.util.List;
 @Service
 public class AnnounUsecaseImpl implements AnnounUsecase {
 
+  @Value("${sys_setting.announcement.use-application-cache.enable}")
+  private boolean useApplicationCache;
+
   @Value("${sys_setting.announcement.update-when-reboot}")
   private boolean flushCacheWhenReboot;
 
-  @Resource
   private AnnounCache announCache;
-
   @Resource
   private AnnounMapper announMapper;
 
+  @Resource
+  private ApplicationContext applicationContext;
+
+  private void injectAnnounCache() {
+    announCache = useApplicationCache ?
+        applicationContext.getBean(AnnounCacheApplcationImpl.class) :
+        applicationContext.getBean(AnnounCacheImpl.class);
+    List<Announcement> announs = announMapper.getLatestAnnouns(announCache.cacheMaxCapacity(), 0);
+    announCache.flushWithData(announs);
+  }
+
   @PostConstruct
   private void init() {
-    if (flushCacheWhenReboot) {
-      List<Announcement> announs = announMapper.getLatestAnnouns(announCache.cacheMaxCapacity(), 0);
-      announCache.flushWithData(announs);
-    }
+    injectAnnounCache();
   }
 
   @Override
@@ -49,5 +61,10 @@ public class AnnounUsecaseImpl implements AnnounUsecase {
       announs.addAll(announsFromDB);
     }
     return announs;
+  }
+
+  @Override
+  public boolean hasNew(int readedLatestId) {
+    return announCache.hasNew(readedLatestId);
   }
 }

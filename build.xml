@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+         xmlns:spring-boot="antlib:org.springframework.boot.ant"
+         name="projectName" default="default" basedir=".">
+    <description>Builds, tests, and runs the project.</description>
+
+    <!-- 配置开发环境 -->
+    <property environment="env"/>
+
+    <property name="spring-boot.version" value="2.0.5.RELEASE" />
+    <property name="version" value="1.0"/>
+    <property name="project" value="projectName"/>
+    <property name="package" value="com.leo.elib"/>
+    <property name="domain" value="com.leo.elib"/>
+
+    <!-- 项目源代码目录 -->
+    <property name="src.dir" location="src/main/java"/>
+    <property name="test.dir" location="src/test/java"/>
+    <!-- 编译后生成的class文件路径 -->
+    <property name="build.dir" location="build/classes" />
+    <!-- 最终生成jar包的路径 -->
+    <property name="dist.dir" location="build/dist"/>
+    <!-- 项目配置文件路径 -->
+    <property name="config.dir" location="src/main/resources" />
+    <!-- JavaDoc文件路径 -->
+    <property name="doc.dir" location="build/doc"/>
+    <!-- maven-ant-tasks依赖路径 -->
+    <property name="lib.dir" location="build/dependency"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <!-- 清理编译文件 -->
+    <target name="clean" description="清理ant编译文件">
+        <delete dir="build" />
+    </target>
+
+    <!-- 创建必要的文件夹 -->
+    <target name="mkdir" description="建立文件夹">
+        <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${doc.dir}"/>
+    </target>
+
+    <!-- 配置Maven依赖 -->
+    <target name="dependency" depends="mkdir" description="配置ant自动下载maven的依赖包">
+        <path id="maven-ant-tasks.classpath" path="bin/maven-ant-tasks-2.1.3.jar" />
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+                 uri="antlib:org.apache.maven.artifact.ant"
+                 classpathref="maven-ant-tasks.classpath" />
+        <artifact:dependencies filesetId="mavenlib" pathId="mavenclasspath" useScope="runtime">
+            <pom file="pom.xml" />
+        </artifact:dependencies>
+        <copy todir="${lib.dir}">
+            <fileset refid="mavenlib" />
+            <mapper type="flatten" />
+        </copy>
+    </target>
+
+    <!-- 编译代码 -->
+    <target name="compile" depends="dependency" description="编译代码">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" encoding="UTF-8"
+               includeantruntime="no" source="23" target="23"
+               excludes="**/test/*,**/test/bean/*,**/*.svn,*.svn"
+               includes="**/*.java" deprecation="true" failonerror="true" debug="true">
+            <classpath refid="classpath" />
+        </javac>
+        <copy todir="${build.dir}">
+            <fileset dir="${config.dir}" includes="**/*"/>
+        </copy>
+    </target>
+
+    <!-- 生成Javadoc文档 -->
+    <target name="javadoc" description="生成Javadoc文档">
+        <delete dir="${doc.dir}"/>
+        <mkdir dir="${doc.dir}"/>
+        <javadoc packagenames="${domain}.*" sourcepath="${src.dir}" destdir="${doc.dir}"
+                 windowtitle="${project} Javadoc" use="yes"
+                 linksource="no" splitindex="yes" encoding="UTF-8"
+                 docencoding="GBK" locale="zh_CN">
+            <classpath refid="classpath"/>
+        </javadoc>
+    </target>
+
+    <!-- 打包项目 -->
+    <target name="package" depends="compile" description="打jar包" >
+        <tstamp>
+            <format property="TIME" pattern="yyMMddHHmm"/>
+        </tstamp>
+        <path id="spring-boot-antlib.classpath" path="bin/spring-boot-antlib-2.0.5.RELEASE.jar" />
+        <typedef resource="org/springframework/boot/ant/antlib.xml"
+                 uri="antlib:org.springframework.boot.ant"
+                 classpathref="spring-boot-antlib.classpath" />
+        <spring-boot:exejar destfile="${dist.dir}/${project}-${version}-${TIME}.jar"
+                            classes="${build.dir}"
+                            start-class="com.leo.elib.App">
+            <lib>
+                <fileset dir="${lib.dir}" />
+            </lib>
+        </spring-boot:exejar>
+    </target>
+
+    <!-- 默认任务 -->
+    <target name="default" depends="clean, package, javadoc" />
+</project>

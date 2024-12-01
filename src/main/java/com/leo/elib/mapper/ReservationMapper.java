@@ -12,11 +12,8 @@ import java.util.List;
 public interface ReservationMapper {
   void insertRecord(int userId, int bookUnqId, int libId, String isbn, byte status, LocalDateTime reserveTime, LocalDateTime pickUpTime);
   void updateStatus(int reserveId, byte status);
-
   // 现在用户等待取书的数量
   int getUserRecordWithStatus(int userId, byte status);
-
   List<ReserveBriefRecord> getReserved(int userId, ReservationStatus status, int offset, int num);
-
   ReserveRecord getReserveRecord(int reserveId);
 }

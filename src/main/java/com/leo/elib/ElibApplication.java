@@ -3,9 +3,15 @@ package com.leo.elib;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.util.StringUtils;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -13,8 +19,20 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableAspectJAutoProxy
 public class ElibApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(ElibApplication.class, args);
+    public static void main(String[] args) throws UnknownHostException {
+        ConfigurableApplicationContext application =SpringApplication.run(ElibApplication.class, args);
+        Environment env = application.getEnvironment();
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        String port = env.getProperty("server.port");
+        String path = env.getProperty("server.servlet.context-path");
+        if (StringUtils.isEmpty(path)) {
+            path = "";
+        }
+        System.out.print("\n----------------------------------------------------------\n\t" +
+            "Application  is running! Access URLs:\n\t" +
+            "Local: \t\thttp://localhost:" + port + path + "\n\t" +
+            "External: \thttp://" + ip + ":" + port + path + "\n\t" +
+            "----------------------------------------------------------");
     }
 }
 //

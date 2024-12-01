@@ -1,6 +1,8 @@
 package com.leo.elib.entity.elastic;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.leo.elib.config.ServiceNetConfig;
 import com.leo.elib.entity.BookInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,6 +51,9 @@ public class BookDetailedInfo {
   @Field(type = FieldType.Text)
   private String desc;
 
+  @Field(type = FieldType.Text, index = false) // 不参与索引
+  private String shortDesc;
+
   @Field(type = FieldType.Integer, index = false) // 修改为 Integer
   private int wordCount;
 
@@ -66,6 +71,9 @@ public class BookDetailedInfo {
 
   @Field(type = FieldType.Keyword, index = false) // 不参与索引
   private String coverLUrl;
+
+  @Field(type = FieldType.Long, index = false) // 修改为 Long
+  private long coverDomColor;
 
   @Field(type = FieldType.Integer, index = false) // 修改为 Integer
   private int rating;
@@ -97,6 +105,8 @@ public class BookDetailedInfo {
   @Field(type = FieldType.Text)
   private List<String> tagNames;
 
+  @JsonIgnore
+  private boolean urlSet = false;
 
   public BookDetailedInfo(BookInfo info){
     this.isbn = info.getIsbn();
@@ -106,12 +116,14 @@ public class BookDetailedInfo {
     this.publisherName = info.getPublisherName();
     this.pubDate = info.getPubDate();
     this.desc = info.getDesc();
+    this.shortDesc = info.getShortDesc();
     this.wordCount = info.getWordCount();
     this.langId = info.getLangId();
     this.langName = info.getLangName();
     this.coverSUrl = info.getCoverSUrl();
     this.coverMUrl = info.getCoverMUrl();
     this.coverLUrl = info.getCoverLUrl();
+    this.coverDomColor = info.getCoverDomColor();
     this.rating = info.getRating();
     this.eBookUrl = info.getEbookUrl();
     this.category1 = info.getCategory1();
@@ -122,5 +134,13 @@ public class BookDetailedInfo {
     this.authorNames = info.getAuthorNames();
     this.tagIds = info.getTagIds();
     this.tagNames = info.getTagNames();
+  }
+
+  public void buildUrl() {
+    if (urlSet) return;
+    this.coverSUrl = ServiceNetConfig.equip(coverSUrl);
+    this.coverMUrl = ServiceNetConfig.equip(coverMUrl);
+    this.coverLUrl = ServiceNetConfig.equip(coverLUrl);
+    urlSet = true;
   }
 }

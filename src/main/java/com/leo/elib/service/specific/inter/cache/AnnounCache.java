@@ -9,4 +9,6 @@ public interface AnnounCache {
   int cacheMaxCapacity();
   void insertAnnounAsLatest(Announcement announ);
   List<Announcement> getLatestAnnoun(int num, int offset);
+  // 给出已经阅读的最新通知的 id，判断是否有新的通知
+  boolean hasNew(int readedLatestId);
 }

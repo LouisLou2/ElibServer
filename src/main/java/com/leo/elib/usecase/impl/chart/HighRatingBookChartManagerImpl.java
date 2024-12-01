@@ -17,9 +17,6 @@ import java.util.stream.Collectors;
 @Service
 public class HighRatingBookChartManagerImpl implements HighRatingBookChartManager {
 
-//  @Value("${container.redis.chart.high_rating_book_zset}")
-//  private String trendingBookCont;
-
   @Value("${sys_setting.chart.high_rating_book.list_size}")
   private int listSize;
 
@@ -57,6 +54,9 @@ public class HighRatingBookChartManagerImpl implements HighRatingBookChartManage
 
   @Override
   public List<BookBrief> getHighRatingBooks(int pageNum, int pageSize) {
+    if (pageNum==10){
+      int x=0;
+    }
     int size = highRatingBooks.size();
     int start = pageNum * pageSize;
     int end = start + pageSize;
