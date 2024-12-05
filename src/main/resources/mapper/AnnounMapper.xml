@@ -9,6 +9,13 @@
         <result property="editorId" column="editor_id"/>
     </resultMap>
 
+    <resultMap id="announBriefMap" type="AnnounceBrief">
+        <id property="announcementId" column="announcement_id"/>
+        <result property="sendingTime" column="sending_time"/>
+        <result property="expiryTime" column="expiry_time"/>
+        <result property="editorId" column="editor_id"/>
+    </resultMap>
+
     <insert id="insertAnnoun">
         insert into announcement (announcement_id, sending_time, expiry_time, title, content, category, editor_id, cover)
         values (#{announ.announcementId},
@@ -31,5 +38,17 @@
         select * from announcement
         order by sending_time desc
         limit #{num} offset #{offset}
+    </select>
+
+    <select id="getLatestAnnounBrief" resultMap="announBriefMap">
+        select announcement_id, sending_time, expiry_time, title, category, editor_id, cover
+        from announcement
+        order by sending_time desc
+        limit #{num} offset #{offset}
+    </select>
+
+    <select id="getAnnounDetail" resultMap="announMap">
+        select * from announcement
+        where announcement_id = #{id}
     </select>
 </mapper>

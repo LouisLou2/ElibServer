@@ -1,5 +1,6 @@
 package com.leo.elib.service.specific.impl.cache.static_type;
 
+import com.leo.elib.entity.BookCate;
 import com.leo.elib.entity.BookTag;
 import com.leo.elib.service.base_service.inter.RCacheManager;
 import com.leo.elib.service.specific.inter.cache.static_type.BookCache;
@@ -19,7 +20,9 @@ import java.util.stream.Collectors;
 @Service
 public class BookCacheImpl implements BookCache {
 
-  @Value("${container.redis.book-cache.book-cate-hash}")
+  private static final String debug_originalCateCont = "elib:hash:book_cate";
+
+  @Value("${container.redis.book-cache.book-cate-info-hash}")
   private String bookCateHashCont;
   @Value("${container.redis.book-cache.book-tag-hash-name}")
   private String bookTagNameHashCont;
@@ -31,7 +34,7 @@ public class BookCacheImpl implements BookCache {
   private HashOperations<String, String, Object> opsForHash;
 
   // 应用内缓存
-  Map<Integer,String> cateMap;
+  Map<Integer, BookCate> cateMap;
   Map<Short,String> tagNameMap;
   Map<Short, BookTag> tagMap;
 
@@ -46,7 +49,7 @@ public class BookCacheImpl implements BookCache {
     Map<String,Object> cateEntryMap = opsForHash.entries(bookCateHashCont);
     cateMap = new HashMap<>();
     for (var entry : cateEntryMap.entrySet()) {
-      cateMap.put(Integer.parseInt(entry.getKey()), Objects.requireNonNull(entry.getValue()).toString());
+      cateMap.put(Integer.parseInt(entry.getKey()), (BookCate) entry.getValue());
     }
     // 使用stream的写法
     tagNameMap = opsForHash.entries(bookTagNameHashCont)
@@ -69,14 +72,14 @@ public class BookCacheImpl implements BookCache {
   @Override
   public Pair<String, String> getCategoryName(int categoryId, int subCategoryId) {
     return Pair.of(
-      cateMap.get(categoryId),
-      cateMap.get(subCategoryId)
+      cateMap.get(categoryId).getCateName(),
+      cateMap.get(subCategoryId).getCateName()
     );
   }
 
   @Override
   public String getCategoryName(int categoryId) {
-    return cateMap.get(categoryId);
+    return cateMap.get(categoryId).getCateName();
   }
 
   @Override
@@ -84,5 +87,22 @@ public class BookCacheImpl implements BookCache {
     return tagIds.stream()
       .map(tagNameMap::get)
       .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<BookCate> getCate(List<Integer> cateIds) {
+    return cateIds.stream()
+      .map(cateMap::get)
+      .collect(Collectors.toList());
+  }
+
+  @Override
+  public Map<Integer, String> debug_GetAllCategoryNames() {
+    Map<String,Object> cateEntryMap = opsForHash.entries(debug_originalCateCont);
+    Map<Integer,String> cateMap1 = new HashMap<>();
+    for (var entry : cateEntryMap.entrySet()) {
+      cateMap1.put(Integer.parseInt(entry.getKey()), (String) entry.getValue());
+    }
+    return cateMap1;
   }
 }

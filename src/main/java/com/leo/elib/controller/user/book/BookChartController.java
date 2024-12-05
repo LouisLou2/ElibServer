@@ -2,8 +2,8 @@ package com.leo.elib.controller.user.book;
 
 import com.leo.elib.comp_struct.RespWrapper;
 import com.leo.elib.entity.dto.dao.BookBrief;
-import com.leo.elib.usecase.inter.chart.HighRatingBookChartManager;
-import com.leo.elib.usecase.inter.chart.TrendingBookManager;
+import com.leo.elib.usecase.inter.chart.book.HighRatingBookChartManager;
+import com.leo.elib.usecase.inter.chart.book.TrendingBookManager;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

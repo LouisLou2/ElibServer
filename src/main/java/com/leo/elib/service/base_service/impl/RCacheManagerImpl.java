@@ -16,11 +16,15 @@ public class RCacheManagerImpl implements RCacheManager {
   private RedisTemplate<String, Object> redisTemplate;
 
   @Resource
+  private RedisTemplate<String,Integer> redisTemplateInt;
+
+  @Resource
   private RedisTemplate<String, String> redisTemplateVstr;
   
   private HashOperations<String, String, Object> opsForHash;
   private HashOperations<String, Integer, Object> opsForHashIntKey;
   private ZSetOperations<String, String> opsForZSet;
+  private ZSetOperations<String, Integer> opsForZSetInt;
   private ListOperations<String, Object> opsForList;
 
   @PostConstruct
@@ -29,6 +33,7 @@ public class RCacheManagerImpl implements RCacheManager {
     opsForHashIntKey = redisTemplate.opsForHash();
     opsForZSet = redisTemplateVstr.opsForZSet();
     opsForList = redisTemplate.opsForList();
+    opsForZSetInt = redisTemplateInt.opsForZSet();
   }
 
   @Override
@@ -47,7 +52,22 @@ public class RCacheManagerImpl implements RCacheManager {
   }
 
   @Override
+  public ZSetOperations<String, Integer> getOpsForZSetInt() {
+    return opsForZSetInt;
+  }
+
+  @Override
   public ListOperations<String, Object> getOpsForList() {
     return opsForList;
+  }
+
+  @Override
+  public RedisTemplate<String, Object> getRedisObjTemplate() {
+    return redisTemplate;
+  }
+
+  @Override
+  public RedisTemplate<String, Object> debug_getRedisTemplate() {
+    return redisTemplate;
   }
 }

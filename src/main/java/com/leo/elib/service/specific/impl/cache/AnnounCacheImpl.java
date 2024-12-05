@@ -1,5 +1,6 @@
 package com.leo.elib.service.specific.impl.cache;
 
+import com.leo.elib.entity.AnnounceBrief;
 import com.leo.elib.entity.dto.dao.Announcement;
 import com.leo.elib.service.base_service.inter.RCacheManager;
 import com.leo.elib.service.specific.inter.cache.AnnounCache;
@@ -30,9 +31,9 @@ public class AnnounCacheImpl implements AnnounCache {
     opsForList = rCacheManager.getOpsForList();
   }
 
-
   @Override
   public void flushWithData(List<Announcement> announs) {
+    assert announs.stream().allMatch(Announcement::urlUnBuildOrNull);
     // 清空原有数据
     opsForList.getOperations().delete(announCont);
     // 重新插入
@@ -46,6 +47,8 @@ public class AnnounCacheImpl implements AnnounCache {
 
   @Override
   public void insertAnnounAsLatest(Announcement announ) {
+    assert announ != null;
+    assert announ.urlUnBuildOrNull();
     // 将 Map 存储为 JSON 字符串或直接存储 Map 对象
     opsForList.leftPush(announCont, announ);
     // 仅保留最新的 2000 条通知
@@ -56,7 +59,21 @@ public class AnnounCacheImpl implements AnnounCache {
   public List<Announcement> getLatestAnnoun(int num, int offset) {
     List<Object> list = opsForList.range(announCont, offset, offset + num - 1);
     assert list != null;
-    return (List<Announcement>) (List<?>) list;
+    List<Announcement> announs = (List<Announcement>) (List<?>) list;
+    announs.forEach(Announcement::buildUrl);
+    return announs;
+  }
+
+  @Override
+  public List<AnnounceBrief> getLatestAnnounBrief(int num, int offset) {
+    List<Announcement> announs = getLatestAnnoun(num, offset);
+    return announs.stream().map(AnnounceBrief::fromAnnouncementUrlBuildOrNull).toList();
+  }
+
+  @Override
+  public Announcement getAnnounDetail(int id) {
+    // TODO: implement this method
+    throw new RuntimeException("Not implemented");
   }
 
   @Override

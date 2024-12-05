@@ -2,6 +2,7 @@ package com.leo.elib.controller.user.book;
 
 import com.leo.elib.comp_struct.RespWrapper;
 import com.leo.elib.constant.ResCodeEnum;
+import com.leo.elib.constant.user.UserViewBookBehavior;
 import com.leo.elib.entity.BookInfo;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
@@ -16,9 +17,22 @@ public class BookInfoController {
   @Resource
   private BookInfoProvider bookInfoProvider;
 
-  @GetMapping("/info")
-  RespWrapper<?> getBookInfo(String isbn) {
-    BookInfo bookInfo = bookInfoProvider.getBookInfo(isbn);
+  // 此方法不要求认证
+  @GetMapping("/info_one_isbn")
+  RespWrapper<?> getBookInfo(String isbn, int relatedBookNum) {
+    BookInfo bookInfo = bookInfoProvider.getBookInfo(isbn,relatedBookNum);
+    if (bookInfo == null) {
+      return RespWrapper.error(ResCodeEnum.ResourceNotFound);
+    }
+    bookInfo.buildUrl();
+    return RespWrapper.success(bookInfo);
+  }
+
+  // 此方法要求认证, 用户的信息虽说不会在这里用到，但是在Filter中要保证用户是合法的状态
+  @GetMapping("/info_one_isbn_cb")
+  @UserViewBookBehavior
+  RespWrapper<?> getBookInfoCountBehavior(String isbn, int relatedBookNum) {
+    BookInfo bookInfo = bookInfoProvider.getBookInfo(isbn,relatedBookNum);
     if (bookInfo == null) {
       return RespWrapper.error(ResCodeEnum.ResourceNotFound);
     }

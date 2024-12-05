@@ -38,4 +38,33 @@ public class RedisConfig {
 
         return template;
     }
+
+    @Bean
+    public RedisTemplate<String, Integer> redisTemplateStrInt(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Integer> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        // 配置 ObjectMapper
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.activateDefaultTyping(
+            LaissezFaireSubTypeValidator.instance,
+            ObjectMapper.DefaultTyping.NON_FINAL,
+            JsonTypeInfo.As.PROPERTY
+        );
+        mapper.registerModule(new JavaTimeModule());
+
+        // 使用 Jackson2JsonRedisSerializer 来序列化 Integer 类型的值
+        Jackson2JsonRedisSerializer<Integer> integerJsonSerializer = new Jackson2JsonRedisSerializer<>(Integer.class);
+
+        // 使用 StringRedisSerializer 来序列化 String 类型的键
+        StringRedisSerializer strSerializer = new StringRedisSerializer();
+
+        // 设置 Redis 键和值的序列化方式
+        template.setKeySerializer(strSerializer);          // 键使用 StringRedisSerializer
+        template.setHashKeySerializer(strSerializer);     // Hash 键使用 StringRedisSerializer
+        template.setValueSerializer(integerJsonSerializer); // 值使用 Jackson2JsonRedisSerializer<Integer>
+        template.setHashValueSerializer(integerJsonSerializer); // Hash 值使用 Jackson2JsonRedisSerializer<Integer>
+
+        return template;
+    }
 }

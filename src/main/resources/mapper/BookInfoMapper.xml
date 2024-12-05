@@ -41,12 +41,17 @@
             <result column="author_name"/>
         </collection>
     </resultMap>
+
+    <resultMap id="AuthorMap" type="Author" autoMapping="true">
+        <id column="target_author_id" property="authorId"/>
+        <result column="target_author_book_count" property="bookCount"/>
+        <result column="target_author_name" property="name"/>
+        <result column="target_author_desc" property="desc"/>
+    </resultMap>
     
     <resultMap id="AuthorWithBooks" type="AuthorWithBookLis" autoMapping="true">
         <id column="target_author_id" property="authorId"/>
-        <result column="target_author_name" property="name"/>
-        <result column="target_author_desc" property="desc"/>
-        <result column="target_author_book_count" property="bookCount"/>
+        <association property="author" resultMap="AuthorMap" autoMapping="true"/>
         <collection property="books" ofType="BookBrief" resultMap="BookBriefMap"/>
     </resultMap>
     
@@ -352,6 +357,17 @@
         select isbn
         from book_info
         limit #{num} offset #{offset}
+    </select>
+
+    <select id="debug_getCateBookNum" resultType="com.leo.elib.entity.CateBookNum">
+        select category_id as cateId, count(1) as num
+        from book_info
+        group by category_id
+    </select>
+    <select id="debug_getSubCateBookNum" resultType="com.leo.elib.entity.CateBookNum">
+        select subcategory_id as cateId, count(1) as num
+        from book_info
+        group by subcategory_id
     </select>
 
     <update id="debug_setColor">

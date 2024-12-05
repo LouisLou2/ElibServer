@@ -34,6 +34,8 @@ spring:
 
 server:
   port: 9021
+resource-server:
+  address: http://localhost:9021
   
 # 设置mybatis寻找对应.xml文件的位置
 mybatis:
@@ -77,7 +79,8 @@ container:
       at-hash: elib:hash:at
       rt-hash: elib:hash:rt
     book-cache:
-      book-cate-hash: elib:hash:book_cate
+      # book-cate-hash: elib:hash:book_cate
+      book-cate-info-hash: elib:hash:book_cate_info
       book-tag-hash-name: elib:hash:book_tag:name
       book-tag-hash-whole: elib:hash:book_tag:whole
     template:
@@ -100,6 +103,18 @@ container:
     announcement:
       cont-name: elib:list:announcement
       max_capacity: 1000
+    author:
+      hash-cont-name: elib:hash:author
+      zset-cont-name: elib:zset:author
+      author-part-suffix: author
+      book-part-suffix: book
+      max_capacity: 1000
+      cache-author-books-num: 20
+    hit-cate:
+      hit-sub-cate-zset: elib:zset:hit_sub_cate
+#    topics:
+#      cont-name: elib:hash:topics
+#      max_capacity: 1000
 
 authen:
   verify:
@@ -119,6 +134,9 @@ path:
   filterExcludes: 
     - /api/user/auth
     - /api/user/book_chart
+    - /api/user/book_info/info_one_isbn
+    - /api/user/announ
+    - /api/user/book_cate
 
 sys_setting:
   bookshelf:

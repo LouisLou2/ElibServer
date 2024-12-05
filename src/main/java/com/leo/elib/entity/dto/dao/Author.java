@@ -21,11 +21,10 @@ public class Author {
     public static final List<String> worthSearchFriendlyFields = List.of(
         "name", "desc"
     );
-
     @Id
     @Field(type = FieldType.Integer, index = false)
     @JsonProperty("author_id")
-    private Integer authorId;
+    private int authorId;
 
     @Field(type = FieldType.Text)
     private String name;

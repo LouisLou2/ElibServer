@@ -76,25 +76,25 @@ public class BookViewingHistoryTests {
 //    }
 //  }
 
-  @Test
-  void insertViewingHistoryBatch() {
-    List< BookInfo > bookInfos = bookInfoMapper.debug_getBookInfo(0, 100);
-    List< BookViewingHistory > histories = new ArrayList<>();
-    for (int i =0;i<bookInfos.size();++i){
-      BookInfo bookInfo = bookInfos.get(i);
-      BookViewingHistory hist = new BookViewingHistory(10003, bookInfo.getIsbn(), bookInfo.getTitle(), bookInfo.getAuthorNames(), bookInfo.getPublisherName(), LocalDateTime.now().minusDays(2).minusMinutes(i * 5L),bookInfo.getCoverMUrl(), bookInfo.getCoverDomColor());
-      histories.add(hist);
-    }
-    // sleep
-    for (BookViewingHistory history : histories) {
-      bookVHManager.addViewingHistory(history);
-    }
-    try {
-      Thread.sleep(14000); //上面的异步方法需要时间，所以这里等待一下，实际生产环境不需要
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
+//  @Test
+//  void insertViewingHistoryBatch() {
+//    List< BookInfo > bookInfos = bookInfoMapper.debug_getBookInfo(0, 100);
+//    List< BookViewingHistory > histories = new ArrayList<>();
+//    for (int i =0;i<bookInfos.size();++i){
+//      BookInfo bookInfo = bookInfos.get(i);
+//      BookViewingHistory hist = new BookViewingHistory(10003, bookInfo.getIsbn(), bookInfo.getTitle(), bookInfo.getAuthorNames(), bookInfo.getPublisherName(), LocalDateTime.now().minusDays(2).minusMinutes(i * 5L),bookInfo.getCoverMUrl(), bookInfo.getCoverDomColor());
+//      histories.add(hist);
+//    }
+//    // sleep
+//    for (BookViewingHistory history : histories) {
+//      bookVHManager.addViewingHistory(history);
+//    }
+//    try {
+//      Thread.sleep(14000); //上面的异步方法需要时间，所以这里等待一下，实际生产环境不需要
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
+//  }
 
   @Test
   void getViewingHistory() {

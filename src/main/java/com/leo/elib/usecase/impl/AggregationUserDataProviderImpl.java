@@ -4,8 +4,8 @@ import com.leo.elib.usecase.inter.AggregationUserDataProvider;
 import com.leo.elib.usecase.inter.AnnounUsecase;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import com.leo.elib.usecase.inter.BookViewingHistoryManager;
-import com.leo.elib.usecase.inter.chart.HighRatingBookChartManager;
-import com.leo.elib.usecase.inter.chart.TrendingBookManager;
+import com.leo.elib.usecase.inter.chart.book.HighRatingBookChartManager;
+import com.leo.elib.usecase.inter.chart.book.TrendingBookManager;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

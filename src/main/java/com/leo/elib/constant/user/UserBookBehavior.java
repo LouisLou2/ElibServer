@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum UserBookBehavior implements BaseCodeEnum{
 
-  Tap((byte) 0),
+  View((byte) 0),
   Collect((byte) 1),
   Reserve((byte) 2);
 

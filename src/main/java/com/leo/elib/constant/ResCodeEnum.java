@@ -2,6 +2,7 @@ package com.leo.elib.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.leo.elib.entity.dto.dao.Announcement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -33,7 +34,10 @@ public enum ResCodeEnum {
   CancelWillCauseOverdue(501, "取消预约将导致超时次数+1"),
 
   /*----Resource----------------------------*/
-  ResourceNotFound(601, "resource not found");
+  ResourceNotFound(601, "resource not found"),
+
+  /*----Announcement------------------------*/
+  AnnouncementNotFound(701, "announcement not found");
 
   final int code;
   @Getter

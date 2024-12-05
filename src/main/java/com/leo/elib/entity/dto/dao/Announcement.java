@@ -19,6 +19,7 @@ public class Announcement {
   @JsonProperty("announcement_id")
   private int announcementId;  // 对应 announcement_id
 
+  @JsonProperty("sending_time")
   private LocalDateTime sendingTime;               // 对应 time
 
   @JsonProperty("expiry_time")
@@ -38,9 +39,19 @@ public class Announcement {
   @JsonIgnore
   private boolean urlSet = false;
 
+  public boolean urlBuildOrNull(){
+    return cover == null || urlSet;
+  }
+
+  public boolean urlUnBuildOrNull(){
+    return cover == null && !urlSet;
+  }
+
   public void buildUrl() {
+    if (cover == null) return;
     if (urlSet) return;
     this.cover = ServiceNetConfig.equip(cover);
     urlSet = true;
   }
+
 }

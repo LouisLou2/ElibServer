@@ -1,1 +1,1 @@
-"{\"book_viewing_history\":{\"settings\":{\"index\":{\"routing\":{\"allocation\":{\"include\":{\"_tier_preference\":\"data_content\"}}},\"refresh_interval\":\"1s\",\"number_of_shards\":\"1\",\"number_of_replicas\":\"1\"}}}}"
+"{\"book_viewing_history\":{\"settings\":{\"index\":{\"routing\":{\"allocation\":{\"include\":{\"_tier_preference\":\"data_content\"}}},\"number_of_shards\":\"1\",\"number_of_replicas\":\"1\"}}}}"

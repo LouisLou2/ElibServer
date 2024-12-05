@@ -20,7 +20,7 @@ public class BookPopularityCalcImpl implements BookPopularityCalc {
   @Override
   public int calcPopularity(UserBookBehavior behavior) {
     return switch (behavior) {
-      case Tap -> tapWeight;
+      case View -> tapWeight;
       case Collect -> collectWeight;
       case Reserve -> reserveWeight;
     };

@@ -1,6 +1,7 @@
 package com.leo.elib.usecase.impl;
 
 import com.leo.elib.constant.book.LibBookStatus;
+import com.leo.elib.constant.user.UserViewBookBehavior;
 import com.leo.elib.entity.AuthorWithBookLis;
 import com.leo.elib.entity.BookInfo;
 import com.leo.elib.entity.dto.dao.Author;
@@ -10,9 +11,11 @@ import com.leo.elib.mapper.AuthorMapper;
 import com.leo.elib.mapper.BookInfoMapper;
 import com.leo.elib.mapper.LibBorrowMapper;
 import com.leo.elib.service.specific.inter.RecoBookProvider;
+import com.leo.elib.service.specific.inter.cache.AuthorCache;
 import com.leo.elib.service.specific.inter.cache.ChartsBookCacheExecutor;
 import com.leo.elib.service.specific.inter.cache.static_type.BookInfoCacheManager;
 import com.leo.elib.usecase.inter.BookInfoProvider;
+import com.leo.elib.util.ListUtil;
 import jakarta.annotation.Resource;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import java.util.List;
 
 @Service
 public class BookInfoProviderImpl implements BookInfoProvider {
+
   @Resource
   private BookInfoMapper bookInfoMapper;
   @Resource
@@ -37,8 +41,48 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   @Resource
   private ChartsBookCacheExecutor chartsBookCache;
 
+  @Resource
+  private AuthorCache authorCache;
+
+  /**
+   * 此方法会进行缓存加入，如果有需要的话
+   * 注意如果缓存里的不足要用的数量，会从数据库中获取，然后加入缓存
+   * @param authorId
+   * @param num
+   * @return
+   */
+  private List<BookBrief> getFromCacheAndDB(int authorId, int num) {
+    Pair<Boolean, List<BookBrief>> cacheRes = authorCache.getBookBriefsByAuthorId(authorId, num, 0);
+    if (!cacheRes.getFirst()) {
+      int numBooksCachedPerAuthor = authorCache.numOfBooksCachedPerAuthor();
+      AuthorWithBookLis awbl;
+      if(num > numBooksCachedPerAuthor){
+        awbl = bookInfoMapper.getAuthorWithBooks(authorId, num);
+        List<BookBrief> booksToBeCached = ListUtil.safeSubList(0,numBooksCachedPerAuthor,awbl.getBooks());
+        awbl.setBooks(booksToBeCached);
+        authorCache.insertAuthorWithBookLis(awbl);
+        return awbl.getBooks();
+      }else if (num == numBooksCachedPerAuthor){
+        awbl = bookInfoMapper.getAuthorWithBooks(authorId, num);
+        authorCache.insertAuthorWithBookLis(awbl);
+        return awbl.getBooks();
+      } else{
+        awbl = bookInfoMapper.getAuthorWithBooks(authorId, numBooksCachedPerAuthor);
+        authorCache.insertAuthorWithBookLis(awbl);
+        return ListUtil.safeSubList(0,num,awbl.getBooks());
+      }
+    }
+    List<BookBrief> books = cacheRes.getSecond();
+    if (books.size() < num) {
+      // 去数据库中获取
+      List<BookBrief> booksFromDB = bookInfoMapper.getAuthorBooks(authorId, books.size(), num - books.size());
+      books.addAll(booksFromDB);
+    }
+    return books;
+  }
+
   @Override
-  public BookInfo getBookInfo(String isbn) {
+  public BookInfo getBookInfo(String isbn, int relatedBookNum) {
     BookInfo bi = chartsBookCache.getBookWithoutLibs(isbn);
     if (bi == null) {
       bi = bookInfoMapper.getBookInfoWithoutLibs(isbn);
@@ -52,13 +96,18 @@ public class BookInfoProviderImpl implements BookInfoProvider {
     );
     bi.setAvailableLibs(libs);
     bInfoCache.setBookInfoCachedFields(bi);
+    assert !bi.getAuthorIds().isEmpty();
+    int firstAuthorId = bi.getAuthorIds().get(0);
+    List<BookBrief> authorBooks = getFromCacheAndDB(firstAuthorId, relatedBookNum);
+    // 剔除自己
+    authorBooks.removeIf(bookBrief -> bookBrief.getIsbn().equals(isbn));
+    bi.setRelatedBooks(authorBooks);
     return bi;
   }
 
   @Override
   public List<BookBrief> getRecoBooks(int userId, int offset, int num) {
     List<String> recoBookIsbns = recoBookProv.getRecoBookIsbns(userId, offset, num);
-
     // 注意接下来的操作返回的BookBrief的顺序不一定与recoBookIsbns中的isbn顺序一致, 在这里是可以接受的
     Pair<List<BookInfo>,Boolean> cacheRes = chartsBookCache.getBooksWithoutLibs(recoBookIsbns);
     if (cacheRes.getSecond()) {
@@ -95,9 +144,13 @@ public class BookInfoProviderImpl implements BookInfoProvider {
   */
   @Override
   public AuthorWithBookLis getAuthorWithBooks(int authorId, int num) {
+    /*
+    * 不可用，还没有在此方法引入缓存
+    * */
     Author author = authorMapper.getAuthor(authorId);
     List<BookBrief> bookBriefList = bookInfoMapper.getAuthorBooks(authorId, 0, num);
     return new AuthorWithBookLis(
+      authorId,
       author, 
       bookBriefList
     );
@@ -105,10 +158,11 @@ public class BookInfoProviderImpl implements BookInfoProvider {
 
   @Override
   public List<BookBrief> getBooksByAuthor(int authorId, int offset, int num) {
+    /*
+     * 不可用，还没有在此方法引入缓存
+     * */
     return bookInfoMapper.getAuthorBooks(authorId, offset, num);
   }
-
-
 
   @Override
   public List<BookInfo> debug_getBooksByIsbn(int offset, int num) {

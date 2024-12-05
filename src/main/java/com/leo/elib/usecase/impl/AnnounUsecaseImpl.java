@@ -1,5 +1,6 @@
 package com.leo.elib.usecase.impl;
 
+import com.leo.elib.entity.AnnounceBrief;
 import com.leo.elib.entity.dto.dao.Announcement;
 import com.leo.elib.mapper.AnnounMapper;
 import com.leo.elib.service.specific.impl.cache.AnnounCacheApplcationImpl;
@@ -31,11 +32,22 @@ public class AnnounUsecaseImpl implements AnnounUsecase {
   private ApplicationContext applicationContext;
 
   private void injectAnnounCache() {
-    announCache = useApplicationCache ?
-        applicationContext.getBean(AnnounCacheApplcationImpl.class) :
-        applicationContext.getBean(AnnounCacheImpl.class);
-    List<Announcement> announs = announMapper.getLatestAnnouns(announCache.cacheMaxCapacity(), 0);
-    announCache.flushWithData(announs);
+    if (useApplicationCache){
+      // 不会再考虑flushCacheWhenReboot
+      announCache = applicationContext.getBean(AnnounCacheApplcationImpl.class);
+      List<Announcement> announs = announMapper.getLatestAnnouns(announCache.cacheMaxCapacity(), 0);
+      announCache.flushWithData(announs);
+      return;
+    }
+
+    // redis缓存尚未实现好，只能使用application cache
+    throw new UnsupportedOperationException("redis cache not implemented yet");
+
+//    announCache = applicationContext.getBean(AnnounCacheImpl.class);
+//    if (flushCacheWhenReboot) {
+//      List<Announcement> announs = announMapper.getLatestAnnouns(announCache.cacheMaxCapacity(), 0);
+//      announCache.flushWithData(announs);
+//    }
   }
 
   @PostConstruct
@@ -45,6 +57,7 @@ public class AnnounUsecaseImpl implements AnnounUsecase {
 
   @Override
   public void insertAnnounAsLatest(Announcement announ) {
+    assert announ!=null && announ.urlUnBuildOrNull();
     // 插入数据库和缓存
     announMapper.insertAnnoun(announ);
     announCache.insertAnnounAsLatest(announ);
@@ -56,11 +69,35 @@ public class AnnounUsecaseImpl implements AnnounUsecase {
     List<Announcement> announs = announCache.getLatestAnnoun(num, offset);
     // 如果数量不够，再去数据库中补充
     if (announs.size() < num) {
-      List<Announcement> announsFromDB = announMapper.getLatestAnnouns(num - announs.size(), offset+announs.size());
+      List<Announcement> announsFromDB = announMapper.getLatestAnnouns(num - announs.size(), offset + announs.size());
+      announsFromDB.forEach(Announcement::buildUrl);
       // 不加入缓存
       announs.addAll(announsFromDB);
     }
     return announs;
+  }
+
+  @Override
+  public List<AnnounceBrief> getLatestAnnounBrief(int num, int offset) {
+    List<AnnounceBrief> announBriefs = announCache.getLatestAnnounBrief(num, offset);
+    if (announBriefs.size() < num) {
+      List<AnnounceBrief> announBriefsFromDB = announMapper.getLatestAnnounBrief(num - announBriefs.size(), offset + announBriefs.size());
+      announBriefsFromDB.forEach(AnnounceBrief::buildUrl);
+      announBriefs.addAll(announBriefsFromDB);
+    }
+    return announBriefs;
+  }
+
+  @Override
+  public Announcement getAnnounDetail(int id) {
+    // 先去缓存中找
+    Announcement announ = announCache.getAnnounDetail(id);
+    if (announ == null) {
+      // 再去数据库中找
+      announ = announMapper.getAnnounDetail(id);
+    }
+    if (announ != null)  announ.buildUrl();
+    return announ;
   }
 
   @Override

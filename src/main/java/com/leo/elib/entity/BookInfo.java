@@ -90,9 +90,11 @@ public class BookInfo {
   @JsonProperty("available_libs")
   private List<SimpleLib> availableLibs;
 
+  @JsonProperty("related_books")
+  private List<BookBrief> relatedBooks;
+
   @JsonIgnore
   private boolean urlSet = false;
-
 
   public void setNames(
       String langName,
@@ -108,17 +110,17 @@ public class BookInfo {
 
   public BookBrief toBrief() {
     return new BookBrief(
-        isbn,
-        title,
-        shortDesc,
-        authorNames,
-        publisherName,
-        coverSUrl,
-        coverMUrl,
-        coverDomColor,
-        rating,
-        ebookUrl != null,
-        urlSet
+      isbn,
+      title,
+      shortDesc,
+      authorNames,
+      publisherName,
+      coverSUrl,
+      coverMUrl,
+      coverDomColor,
+      rating,
+      ebookUrl != null,
+      urlSet
     );
   }
 
@@ -127,6 +129,8 @@ public class BookInfo {
     this.coverSUrl = ServiceNetConfig.equip(coverSUrl);
     this.coverMUrl = ServiceNetConfig.equip(coverMUrl);
     this.coverLUrl = ServiceNetConfig.equip(coverLUrl);
+    // all the BookBriefs
+    relatedBooks.forEach(BookBrief::buildUrl);
     urlSet = true;
   }
 }

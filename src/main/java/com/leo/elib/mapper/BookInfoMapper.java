@@ -2,6 +2,7 @@ package com.leo.elib.mapper;
 
 import com.leo.elib.entity.AuthorWithBookLis;
 import com.leo.elib.entity.BookInfo;
+import com.leo.elib.entity.CateBookNum;
 import com.leo.elib.entity.TmpBookCover;
 import com.leo.elib.entity.dto.dao.BookBrief;
 import org.apache.ibatis.annotations.Mapper;
@@ -39,4 +40,6 @@ public interface BookInfoMapper {
   void debug_setTmpBookCoverAndShortDesc(String isbn, String coverUrl, String shortDesc);
   List<String> dev_getIsbn(int offset, int num);
   void debug_setColor(String isbn, long color);
+  List<CateBookNum> debug_getCateBookNum();
+  List<CateBookNum> debug_getSubCateBookNum();
 }
