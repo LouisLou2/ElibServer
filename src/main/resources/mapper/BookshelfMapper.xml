@@ -3,8 +3,9 @@
 <mapper namespace="com.leo.elib.mapper.BookshelfMapper">
     
     <resultMap id="BookShelfMap" type="SimpleUserOwnedBook" autoMapping="true">
+        <id column="shelf_ele_id" property="shelfEleId"/>
         <result column="cover_m_url" property="coverMUrl"/>
-        <result column="category" property="category1"/>
+        <result column="category_id" property="category1"/>
     </resultMap>
     
     <insert id="addBookToShelf">
@@ -42,15 +43,25 @@
     </select>
     
     <select id="getAllBooksFromShelf" resultMap="BookShelfMap">
-        select bi.isbn, bi.title, bi.cover_m_url, bs.time, bi.category_id
+        SELECT bs.shelf_ele_id,  bi.isbn, bi.title, bi.cover_m_url, bs.time, bi.category_id, bs.status
         from book_shelf bs
         inner join book_info bi on bs.isbn = bi.isbn
         where user_id = #{userId}
+        order by bs.time desc
     </select>
     
     <select id="numOfBooksInShelf" resultType="short">
         SELECT COUNT(*)
         FROM book_shelf
         WHERE user_id = #{userId}
+    </select>
+
+    <select id="getBooksFromShelf" resultMap="BookShelfMap">
+        SELECT bs.shelf_ele_id, bi.isbn, bi.title, bi.cover_m_url, bs.time, bi.category_id, bs.status
+        FROM book_shelf bs
+        INNER JOIN book_info bi ON bs.isbn = bi.isbn
+        WHERE user_id = #{userId}
+        order by bs.time desc
+        limit #{num} offset #{offset}
     </select>
 </mapper>

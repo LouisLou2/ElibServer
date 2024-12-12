@@ -15,6 +15,8 @@ import java.util.List;
 @Setter
 @Getter
 public class BookCate {
+  @JsonProperty("parent_id")
+  private int parentId;
   @JsonProperty("cate_id")
   private int cateId;
   @JsonProperty("cate_name")

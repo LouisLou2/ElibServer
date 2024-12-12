@@ -6,6 +6,7 @@ import com.leo.elib.entity.SimpleUserOwnedBook;
 import java.util.List;
 
 public interface BookshelfUsecase {
+   List<SimpleUserOwnedBook> getBooksFromShelf(int userId, int offset, int num);
    List<SimpleUserOwnedBook> getAllBooksFromShelf(int userId);
    ResCodeEnum addBookToShelf(int userId, String isbn);
    void removeBookFromShelf(int userId, List<String> isbns);

@@ -232,7 +232,9 @@ server {
 
 
 ##### 后端springboot记录这个地址
-`D:\projects\ElibServer\src\main\java\com\leo\elib\config\ServiceNetConfig.java`
+
+`D:\projects\ElibServer\src\main\java\com\leo\elib\config\ServiceNetConfig.java`更改
+
 ```java
 static private final String ResourceServerAddress = "http://ip:port/";
 ```

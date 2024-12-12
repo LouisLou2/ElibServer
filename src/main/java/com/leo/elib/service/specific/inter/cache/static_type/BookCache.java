@@ -13,5 +13,6 @@ public interface BookCache {
   List<String> getTagNames(List<Short> tagIds);
 
   List<BookCate> getCate(List<Integer> cateIds);
+  List<BookCate> getAllCates();
   Map<Integer,String> debug_GetAllCategoryNames();
 }

@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class SimpleUserOwnedBook {
+
+  @JsonProperty("shelf_ele_id")
+  private int shelfEleId;
+
   private String isbn;
 
   private String title;
@@ -29,6 +33,8 @@ public class SimpleUserOwnedBook {
   // 此字段不从数据库取，数据库不需要管这个字段，它空即可
   @JsonProperty("category1_name")
   private String category1Name;
+
+  private byte status;
 
   @JsonIgnore
   private boolean urlSet = false;

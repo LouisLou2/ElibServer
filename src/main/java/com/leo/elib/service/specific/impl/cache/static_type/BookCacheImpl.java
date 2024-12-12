@@ -42,6 +42,7 @@ public class BookCacheImpl implements BookCache {
   void init () {
     opsForHash = rCacheManager.getOpsForHash();
     getCacheFromRedis();
+    setCatesParentId();
   }
 
   private void getCacheFromRedis() {
@@ -66,6 +67,19 @@ public class BookCacheImpl implements BookCache {
                         e -> Short.parseShort(e.getKey()),
                         e -> (BookTag) e.getValue()
                       ));
+  }
+
+  private void setCatesParentId() {
+    int subId = 0;
+    for (var entry : cateMap.entrySet()) {
+      BookCate cate = entry.getValue();
+      subId = cate.getCateId() / 1000;
+      if (subId == 0) {
+        cate.setParentId(0);
+      } else {
+        cate.setParentId(cate.getCateId()-subId);
+      }
+    }
   }
 
 
@@ -94,6 +108,11 @@ public class BookCacheImpl implements BookCache {
     return cateIds.stream()
       .map(cateMap::get)
       .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<BookCate> getAllCates() {
+    return List.of();
   }
 
   @Override

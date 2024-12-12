@@ -22,9 +22,20 @@ public class BookshelfUsecaseImpl implements BookshelfUsecase {
   private BookCache bookCache;
 
   @Override
+  public List<SimpleUserOwnedBook> getBooksFromShelf(int userId, int offset, int num) {
+    var lis = bookshelfMapper.getBooksFromShelf(userId,offset,num);
+    lis.forEach(
+      ele -> ele.setCategory1Name(
+          bookCache.getCategoryName(ele.getCategory1())
+      )
+    );
+    return lis;
+  }
+
+  @Override
   public List<SimpleUserOwnedBook> getAllBooksFromShelf(int userId) {
     var lis = bookshelfMapper.getAllBooksFromShelf(userId);
-    lis.forEach( 
+    lis.forEach(
       ele -> 
         ele.setCategory1Name(
           bookCache.getCategoryName(ele.getCategory1())

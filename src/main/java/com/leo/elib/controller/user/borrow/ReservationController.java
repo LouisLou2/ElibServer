@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/borrow")
+@RequestMapping("/api/user/borrow")
 public class ReservationController {
 
   @Resource

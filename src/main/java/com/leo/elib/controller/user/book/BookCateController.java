@@ -25,4 +25,9 @@ public class BookCateController {
     BookCate.buildUrlForLis(lis);
     return RespWrapper.success(lis);
   }
+
+  @GetMapping("/categories")
+  public RespWrapper<?> getBookInfo(String isbn, int relatedBookNum) {
+    return null;
+  }
 }
