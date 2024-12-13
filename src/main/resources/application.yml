@@ -34,8 +34,8 @@ spring:
 
 server:
   port: 9021
-resource-server:
-  address: http://localhost:9021
+#resource-server:
+#  address: http://localhost:9021
   
 # 设置mybatis寻找对应.xml文件的位置
 mybatis:

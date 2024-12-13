@@ -11,10 +11,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,11 +70,11 @@ public class BookCacheImpl implements BookCache {
     int subId = 0;
     for (var entry : cateMap.entrySet()) {
       BookCate cate = entry.getValue();
-      subId = cate.getCateId() / 1000;
+      subId = cate.getCateId() % 1000;
       if (subId == 0) {
         cate.setParentId(0);
       } else {
-        cate.setParentId(cate.getCateId()-subId);
+        cate.setParentId(cate.getCateId() -subId);
       }
     }
   }
@@ -112,7 +109,7 @@ public class BookCacheImpl implements BookCache {
 
   @Override
   public List<BookCate> getAllCates() {
-    return List.of();
+    return new ArrayList<>(cateMap.values());
   }
 
   @Override

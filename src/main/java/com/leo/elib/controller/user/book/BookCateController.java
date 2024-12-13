@@ -3,6 +3,7 @@ package com.leo.elib.controller.user.book;
 
 import com.leo.elib.comp_struct.RespWrapper;
 import com.leo.elib.entity.BookCate;
+import com.leo.elib.service.specific.inter.cache.static_type.BookCache;
 import com.leo.elib.usecase.inter.HitCateRepository;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,9 @@ public class BookCateController {
   @Resource
   private HitCateRepository hitCateRepository;
 
+  @Resource
+  private BookCache bookCache;
+
   @GetMapping("/hit_sub")
   public RespWrapper<List<BookCate>> getHitSubCategory(int num) {
     System.out.println("getHitSubCategory with num: " + num);
@@ -27,7 +31,9 @@ public class BookCateController {
   }
 
   @GetMapping("/categories")
-  public RespWrapper<?> getBookInfo(String isbn, int relatedBookNum) {
-    return null;
+  public RespWrapper<?> getAllCates() {
+    List<BookCate> lis = bookCache.getAllCates();
+    BookCate.buildUrlForLis(lis);
+    return RespWrapper.success(lis);
   }
 }
