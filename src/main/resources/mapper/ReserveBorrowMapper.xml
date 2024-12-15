@@ -11,6 +11,52 @@
         <result property="coverMUrl" column="cover_m_url"/>
     </resultMap>
 
+    <resultMap id="RBDetailMap" type="RBDetail" autoMapping="true">
+        <id property="reserveId" column="reserve_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="reserveTime" column="reserve_time"/>
+        <result property="bookUnqId" column="book_unq_id"/>
+        <result property="libId" column="lib_id"/>
+        <result property="pickUpTime" column="pickup_time"/>
+        <result property="returnTime" column="return_time"/>
+        <result property="dueTime" column="due_time"/>
+        <result property="librarianId" column="librarian_id"/>
+        <result property="feeId" column="fee_id"/>
+        <result property="libName" column="name"/>
+        <result property="libPhone" column="phone"/>
+        <result property="libEmail" column="email"/>
+        <result property="oneAuthorName" column="one_author"/>
+        <result property="coverMUrl" column="cover_m_url"/>
+    </resultMap>
+
+    <insert id="insertRecord" parameterType="ReserveParam" useGeneratedKeys="true" keyProperty="reserveId">
+        insert into reservation (
+         user_id,
+         reserve_time,
+         deadline,
+         isbn,
+         status,
+         book_unq_id,
+         lib_id,
+         pickup_time,
+         return_time,
+         due_time,
+         librarian_id,
+         fee_id)
+        values (#{userId},
+                #{reserveTime},
+                #{deadline},
+                #{isbn},
+                #{status},
+                #{bookUnqId},
+                #{libId},
+                #{pickUpTime},
+                #{returnTime},
+                #{dueTime},
+                #{librarianId},
+                #{feeId})
+    </insert>
+
     <select id="getBriefsByUserId" resultMap="ReserveBorrowBriefMap">
         SELECT r.reserve_id,
                r.status,
@@ -28,6 +74,34 @@
           </if>
         order by r.reserve_time desc
         limit #{num} offset #{offset}
+    </select>
+
+    <select id="getDetailsByReserveId" resultMap="RBDetailMap">
+        select r.reserve_id,
+               r.user_id,
+               r.reserve_time,
+               r.deadline,
+               r.isbn,
+               r.status,
+               r.book_unq_id,
+               r.lib_id,
+               r.pickup_time,
+               r.return_time,
+               r.due_time,
+               r.librarian_id,
+               r.fee_id,
+               bi.title,
+               ulb.location,
+               l.name,
+               l.phone,
+               l.email,
+               bi.one_author,
+               bi.cover_m_url
+        from reservation r
+                 inner join book_info bi on r.isbn = bi.isbn
+                 inner join unq_lib_book ulb on r.book_unq_id = ulb.book_unq_id
+                 inner join library l on r.lib_id = l.lib_id
+        where r.reserve_id = #{reserveId}
     </select>
 
 </mapper>

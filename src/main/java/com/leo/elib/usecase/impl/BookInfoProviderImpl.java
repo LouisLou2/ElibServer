@@ -60,15 +60,15 @@ public class BookInfoProviderImpl implements BookInfoProvider {
         awbl = bookInfoMapper.getAuthorWithBooks(authorId, num);
         List<BookBrief> booksToBeCached = ListUtil.safeSubList(0,numBooksCachedPerAuthor,awbl.getBooks());
         awbl.setBooks(booksToBeCached);
-        authorCache.insertAuthorWithBookLis(awbl);
+        authorCache.insertAuthorWithBookLis(awbl.clone());
         return awbl.getBooks();
       }else if (num == numBooksCachedPerAuthor){
         awbl = bookInfoMapper.getAuthorWithBooks(authorId, num);
-        authorCache.insertAuthorWithBookLis(awbl);
+        authorCache.insertAuthorWithBookLis(awbl.clone());
         return awbl.getBooks();
       } else{
         awbl = bookInfoMapper.getAuthorWithBooks(authorId, numBooksCachedPerAuthor);
-        authorCache.insertAuthorWithBookLis(awbl);
+        authorCache.insertAuthorWithBookLis(awbl.clone());
         return ListUtil.safeSubList(0,num,awbl.getBooks());
       }
     }

@@ -14,14 +14,15 @@ public enum ReserveBorrowStatus implements BaseCodeEnum {
   Cancelled((byte) 2),
   WaitingReturn((byte) 3),
   Returned((byte) 4),
-  OverdueReturn((byte) 5);
+  OverdueReturn((byte) 5),
+  CantReturn((byte) 6);
 
   private final byte code;
 
   private static final ReserveBorrowStatus[] enums;
 
   static {
-    enums = new ReserveBorrowStatus[6];
+    enums = new ReserveBorrowStatus[7];
     for (ReserveBorrowStatus status : ReserveBorrowStatus.values()) {
       enums[status.code] = status;
     }

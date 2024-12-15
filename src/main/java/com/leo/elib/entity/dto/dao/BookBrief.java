@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class BookBrief {
+public class BookBrief implements Cloneable{
   private String isbn;
 
   private String title;
@@ -50,5 +50,9 @@ public class BookBrief {
     this.coverSUrl = ServiceNetConfig.equip(coverSUrl);
     this.coverMUrl = ServiceNetConfig.equip(coverMUrl);
     urlSet = true;
+  }
+
+  public BookBrief clone(){
+    return new BookBrief(isbn, title, shortDesc, authorNames, publisherName, coverSUrl, coverMUrl, coverDomColor, rating, hasEbook, urlSet);
   }
 }

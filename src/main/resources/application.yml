@@ -149,6 +149,8 @@ sys_setting:
     reserve_and_unreturn_limit: 10 #已经预约以及未归还的书籍之和不能超过10本，超过则不能再预约
     max_overdue_per_month: 3 #每月最多超期3次
     max_try_times: 3 #最多尝试预约3次
+    over_due_days: 7 #没次借阅从预约日开始计算7天后为逾期
+    max_pickup_days: 3 #最多3天内取书
 
   viewing_history:
     book:
@@ -174,3 +176,4 @@ sys_setting:
       enable: true #是否启用应用级别缓存, true会弃用redis缓存, 直接使用内存缓存
       max-capacity: 1000 #最多缓存1000条公告
     update-when-reboot: true #服务器重启时缓存从数据库更新, 这只对于redis缓存有效
+

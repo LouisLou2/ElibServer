@@ -1,6 +1,7 @@
 package com.leo.elib.service.specific.impl.cache;
 
 import com.leo.elib.entity.AuthorWithBookLis;
+import com.leo.elib.entity.BriefListPack;
 import com.leo.elib.entity.dto.dao.Author;
 import com.leo.elib.entity.dto.dao.BookBrief;
 import com.leo.elib.service.base_service.inter.RCacheManager;
@@ -50,11 +51,11 @@ public class AuthorCacheImpl implements AuthorCache {
 
   private DefaultRedisScript<Long> redisLongResScript;
 
-  private DefaultRedisScript<List> redisListResScript;
+  private DefaultRedisScript<List> redisObjectPairResScript;
 
   private DefaultRedisScript<Author> redisAuthorResScript;
 
-  private DefaultRedisScript<Object> redisObjectResScript;
+  private DefaultRedisScript<BriefListPack> redisListResScript;
 
 
   @PostConstruct
@@ -63,26 +64,10 @@ public class AuthorCacheImpl implements AuthorCache {
     authorPartSuffix = ':' + authorPartSuffix;
     bookPartSuffix = ':' + bookPartSuffix;
     redisLongResScript = new DefaultRedisScript<>(accessScripts.putAuthorWithLisScript(), Long.class);
-    redisListResScript = new DefaultRedisScript<>(accessScripts.getAuthorWithBooksScript(), List.class);
+    redisObjectPairResScript = new DefaultRedisScript<>(accessScripts.getAuthorWithBooksScript(), List.class);
     redisAuthorResScript = new DefaultRedisScript<>(accessScripts.getAuthorScript(), Author.class);
-    redisObjectResScript = new DefaultRedisScript<>(accessScripts.getBookBriefsScript(), Object.class);
+    redisListResScript = new DefaultRedisScript<>(accessScripts.getBookBriefsScript(), BriefListPack.class);
   }
-
-//  void safeShrinkList(List<BookBrief> bookBriefs, int offset, int num) {
-//    // 将offset 之后的num个元素移动至开头
-//    int realBegin = Math.min(offset, bookBriefs.size());
-//    int realEnd = Math.min(offset + num, bookBriefs.size());
-//    for (int i = realBegin; i < realEnd; ++i) {
-//      bookBriefs.set(i - realBegin, bookBriefs.get(i));
-//    }
-//    // 删除多余的元素
-//    int needDel = realEnd - realBegin;
-//    int count = 0;
-//    while (count < needDel) {
-//      bookBriefs.remove(bookBriefs.size() - 1);
-//      ++count;
-//    }
-//  }
 
   @Override
   public Author getAuthorById(int authorId) {
@@ -107,24 +92,24 @@ public class AuthorCacheImpl implements AuthorCache {
 
   @Override
   public Pair<Boolean, List<BookBrief>> getBookBriefsByAuthorId(int authorId, int num, int offset) {
-    Object res = redisTemplate.execute(
-      redisObjectResScript,
+    BriefListPack res = redisTemplate.execute(
+      redisListResScript,
       List.of(
-          hashContName,
-          zsetContName,
-          String.valueOf(authorId),
-          bookPartSuffix
+        hashContName,
+        zsetContName,
+        String.valueOf(authorId),
+        bookPartSuffix
       )
     );
     if (res == null) return Pair.of(false, new ArrayList<>());
-    List<BookBrief> bookBriefs = (List<BookBrief>) res;
-    return Pair.of(true, ListUtil.safeSubList(offset, num,bookBriefs));
+    List<BookBrief> bookBriefs = res.getBookBriefs();
+    return Pair.of(true, ListUtil.safeSubList(offset, num, bookBriefs));
   }
 
   @Override
   public AuthorWithBookLis getAuthorWithBookList(int authorId, int booksNum) {
-    List<Object> res = redisTemplate.execute(
-      redisListResScript,
+    List res = redisTemplate.execute(
+      redisObjectPairResScript,
       List.of(
         hashContName,
         zsetContName,
@@ -133,10 +118,11 @@ public class AuthorCacheImpl implements AuthorCache {
         bookPartSuffix
       )
     );
+    if (res == null) return null;
     assert res.size() == 2 && ((res.get(0) == null && res.get(1) == null) || (res.get(0) != null && res.get(1) != null));
     if (res.get(0) == null) return null;
     Author author = (Author) res.get(0);
-    List<BookBrief> bookBriefs = (List<BookBrief>) res.get(1);
+    List<BookBrief> bookBriefs = ((BriefListPack) res.get(1)).getBookBriefs();
     // 将多余的书籍删除，直接在原有的list上操作
     int needDel = bookBriefs.size() - booksNum;
     int count = 0;
@@ -161,7 +147,7 @@ public class AuthorCacheImpl implements AuthorCache {
       ),
       maxCapacity,
       authorWithBookLis.getAuthor(),
-      authorWithBookLis.getBooks()
+      new BriefListPack(authorWithBookLis.getBooks())
     );
   }
 
