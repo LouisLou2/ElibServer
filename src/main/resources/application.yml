@@ -147,8 +147,9 @@ sys_setting:
 
   reservation:
     reserve_and_unreturn_limit: 10 #已经预约以及未归还的书籍之和不能超过10本，超过则不能再预约
-    max_overdue_per_month: 3 #每月最多超期3次
-    max_try_times: 3 #最多尝试预约3次
+    max_abnormal_per_month: 3 #每月最多超期3次
+    max_cancellation_per_month: 5 #每月最多取消5次
+    max_keep_num: 10 #最多保留10本书:即待取以及已取未还的书籍之和不能超过3本
     over_due_days: 7 #没次借阅从预约日开始计算7天后为逾期
     max_pickup_days: 3 #最多3天内取书
 

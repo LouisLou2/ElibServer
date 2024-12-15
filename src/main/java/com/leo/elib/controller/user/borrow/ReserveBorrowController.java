@@ -4,8 +4,7 @@ import com.leo.elib.comp_struct.NullablePair;
 import com.leo.elib.comp_struct.RespWrapper;
 import com.leo.elib.comp_struct.TokenInfo;
 import com.leo.elib.constant.ResCodeEnum;
-import com.leo.elib.constant.book.ReservationStatus;
-import com.leo.elib.constant.book.ReserveBorrowStatus;
+import com.leo.elib.entity.LibTimeSpan;
 import com.leo.elib.entity.RBDetail;
 import com.leo.elib.entity.ReserveBorrowBrief;
 import com.leo.elib.entity.req.ReserveBookParam;
@@ -26,10 +25,11 @@ public class ReserveBorrowController {
 
   @PostMapping("/reserve")
   RespWrapper<?> reserveBook(@Valid @RequestBody ReserveBookParam body, HttpServletRequest request) {
-    // 注意需要重写此方法，因为数据库更改，有错误
-    // 从request中获取用户
     TokenInfo tokenInfo = (TokenInfo) request.getAttribute("tokenInfo");
     int userId = tokenInfo.getUserId();
+
+    System.out.println("userId: " + userId + " libId: " + body.libId + " isbn: " + body.isbn + " pickUpTime: " + body.pickUpTime);
+
     NullablePair<ResCodeEnum, RBDetail> res = rbUsecase.reserve(
       userId,
       body.libId,
@@ -65,5 +65,10 @@ public class ReserveBorrowController {
     }
     detail.buildUrl();
     return RespWrapper.success(detail);
+  }
+
+  @GetMapping("/time_spans")
+  RespWrapper<List<LibTimeSpan>> getReserveTimeSpans(String isbn) {
+    return RespWrapper.success(rbUsecase.getReserveTimeSpans(isbn));
   }
 }

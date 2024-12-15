@@ -3,7 +3,6 @@ package com.leo.elib.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.leo.elib.config.ServiceNetConfig;
-import com.leo.elib.constant.book.ReservationStatus;
 import com.leo.elib.constant.book.ReserveBorrowStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
 
 @NoArgsConstructor
 @AllArgsConstructor

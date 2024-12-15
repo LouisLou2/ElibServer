@@ -1,5 +1,6 @@
 package com.leo.elib.entity.req;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class ReserveBookParam {
   public String isbn;
 
   @JsonProperty("pick_up_time")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
   @NotNull(message = "pick_up_time is required")
   public LocalDateTime pickUpTime;
 }

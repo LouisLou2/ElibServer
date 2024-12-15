@@ -7,9 +7,9 @@
     </resultMap>
 
     <resultMap id="UserRestrictionMap" type="UserRestriction" autoMapping="true">
-        <result column="overdue_count_this_month" property="overdueTimesThisMonth"/>
-        <result column="reserved_unpicked" property="reservedButUnpicked"/>
-        <result column="unreturned" property="borrowedButUnreturned"/>
+        <result column="sum_of_pickWaited_returnWaited" property="sumOfPickWaitedReturnWaited"/>
+        <result column="cancelled_times_within" property="cancelledTimesWithin"/>
+        <result column="abnormal_pick_return_within" property="abnormalPickReturnWithin"/>
     </resultMap>
 
     <select id="getUserById" resultType="User" resultMap="UserMap">
@@ -31,17 +31,18 @@
 
     <select id="getUserRestriction" resultMap="UserRestrictionMap">
         SELECT
-            r.count as reserved_unpicked,
-            b.count as unreturned,
-            u.restricted,
-            u.overdue_count_this_month
+            a.count as sum_of_pickWaited_returnWaited,
+            b.count as cancelled_times_within,
+            c.count as abnormal_pick_return_within,
+            u.restricted
         FROM
-            (SELECT COUNT(*) AS count FROM reservation where status = #{pendingReserve} and user_id = #{userId}) r,
-            (SELECT COUNT(*) AS count FROM borrow_record where status = #{unreturned} and user_id = #{userId}) b,
-            (select restricted, overdue_count_this_month from user where user_id = #{userId}) u
+            (SELECT COUNT(*) AS count FROM reservation where user_id = #{userId} and (status = #{waitingPickUp} or status = #{waitingReturn})) a,
+            (SELECT COUNT(*) AS count FROM reservation where user_id = #{userId} and reserve_time > #{start} and status = #{cancelled}) b,
+            (SELECT COUNT(*) AS count FROM reservation where user_id = #{userId} and reserve_time > #{start} and (status = #{overduePickUp} or status = #{overdueReturn} or status =#{cantReturn})) c,
+            (select restricted from user where user_id = #{userId}) u
     </select>
 
-        <!--    <select id="getUserRestriction" resultMap="UserRestrictionMap">-->
+    <!--    <select id="getUserRestriction" resultMap="UserRestrictionMap">-->
 <!--        select restricted, overdue_count_this_month-->
 <!--        from user-->
 <!--        where user_id = #{userId}-->

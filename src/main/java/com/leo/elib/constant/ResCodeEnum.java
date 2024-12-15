@@ -31,9 +31,8 @@ public enum ResCodeEnum {
   TooMuchOverdue(404, "too much overdue books"),
   ReserveFailed(405, "失败，预约人数过多，系统繁忙"),
   RBRecordNotFound(406, "record not found"),
-
   CancelWillCauseOverdue(501, "取消预约将导致超时次数+1"),
-
+  CancelledTooMuch(502, "取消预约次数过多"),
   /*----Resource----------------------------*/
   ResourceNotFound(601, "resource not found"),
 

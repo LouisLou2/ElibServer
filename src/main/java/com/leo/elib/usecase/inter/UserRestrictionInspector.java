@@ -4,5 +4,5 @@ import com.leo.elib.comp_struct.NullablePair;
 import com.leo.elib.constant.ResCodeEnum;
 
 public interface UserRestrictionInspector {
-  NullablePair<ResCodeEnum,String> canUserReserveABook(int userId);
+  ResCodeEnum canUserReserveABook(int userId);
 }

@@ -1,5 +1,6 @@
 package com.leo.elib.entity;
 
+import com.leo.elib.constant.ResCodeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class UserRestriction {
-  private boolean isRestricted;
-  private byte overdueTimesThisMonth;
-  private int reservedButUnpicked;
-  private int borrowedButUnreturned;
+  private int sumOfPickWaitedReturnWaited;
+  private int cancelledTimesWithin;
+  private int abnormalPickReturnWithin;
+  private boolean restricted;
 }

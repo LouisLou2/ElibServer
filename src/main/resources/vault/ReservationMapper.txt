@@ -1,8 +1,5 @@
 package com.leo.elib.mapper;
 
-import com.leo.elib.constant.book.ReservationStatus;
-import com.leo.elib.entity.dto.dao.ReserveBriefRecord;
-import com.leo.elib.entity.dto.dao.ReserveRecord;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
