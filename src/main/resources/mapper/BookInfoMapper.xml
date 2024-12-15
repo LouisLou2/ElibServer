@@ -147,7 +147,7 @@
         </foreach>
     </select>
     
-    <select id="getCategoryBriefBooks" resultType="BookBrief">
+    <select id="getCategoryBriefBooks" resultMap="BookBriefMap">
         <include refid="BriefBookFields"/>
         from (
             select

@@ -32,6 +32,7 @@ public class BookCacheImpl implements BookCache {
 
   // 应用内缓存
   Map<Integer, BookCate> cateMap;
+  Map<Integer,List<BookCate>> subCateMap;
   Map<Short,String> tagNameMap;
   Map<Short, BookTag> tagMap;
 
@@ -67,14 +68,22 @@ public class BookCacheImpl implements BookCache {
   }
 
   private void setCatesParentId() {
+    subCateMap = new HashMap<>();
     int subId = 0;
     for (var entry : cateMap.entrySet()) {
       BookCate cate = entry.getValue();
       subId = cate.getCateId() % 1000;
+
       if (subId == 0) {
         cate.setParentId(0);
       } else {
-        cate.setParentId(cate.getCateId() -subId);
+        int parentId = cate.getCateId() - subId;
+        // 如果一级分类不在map中，就加入
+        if (!subCateMap.containsKey(parentId)) {
+          subCateMap.put(parentId, new ArrayList<>());
+        }
+        cate.setParentId(parentId);
+        subCateMap.get(parentId).add(cate);
       }
     }
   }
@@ -110,6 +119,11 @@ public class BookCacheImpl implements BookCache {
   @Override
   public List<BookCate> getAllCates() {
     return new ArrayList<>(cateMap.values());
+  }
+
+  @Override
+  public List<BookCate> getSubCates(int parentId) {
+    return subCateMap.get(parentId);
   }
 
   @Override

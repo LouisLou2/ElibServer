@@ -14,5 +14,6 @@ public interface BookCache {
 
   List<BookCate> getCate(List<Integer> cateIds);
   List<BookCate> getAllCates();
+  List<BookCate> getSubCates(int parentId);
   Map<Integer,String> debug_GetAllCategoryNames();
 }

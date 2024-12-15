@@ -129,6 +129,7 @@ public class BookInfo {
     this.coverSUrl = ServiceNetConfig.equip(coverSUrl);
     this.coverMUrl = ServiceNetConfig.equip(coverMUrl);
     this.coverLUrl = ServiceNetConfig.equip(coverLUrl);
+    if (this.ebookUrl != null)this.ebookUrl = ServiceNetConfig.equip(ebookUrl);
     // all the BookBriefs
     relatedBooks.forEach(BookBrief::buildUrl);
     urlSet = true;

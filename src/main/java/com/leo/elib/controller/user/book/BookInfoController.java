@@ -4,11 +4,14 @@ import com.leo.elib.comp_struct.RespWrapper;
 import com.leo.elib.constant.ResCodeEnum;
 import com.leo.elib.constant.user.UserViewBookBehavior;
 import com.leo.elib.entity.BookInfo;
+import com.leo.elib.entity.dto.dao.BookBrief;
 import com.leo.elib.usecase.inter.BookInfoProvider;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user/book_info")
@@ -38,5 +41,13 @@ public class BookInfoController {
     }
     bookInfo.buildUrl();
     return RespWrapper.success(bookInfo);
+  }
+
+  @GetMapping("/sub_cate_books")
+  public RespWrapper<List<BookBrief>> getBookCate(int subCateId, int offset, int num) {
+    System.out.println("getBookCate with subCateId: " + subCateId + " offset: " + offset + " num: " + num);
+    List<BookBrief> lis = bookInfoProvider.getBooksBySubCate(subCateId, offset, num);
+    lis.forEach(BookBrief::buildUrl);
+    return RespWrapper.success(lis);
   }
 }

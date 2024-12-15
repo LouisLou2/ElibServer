@@ -138,6 +138,11 @@ public class BookInfoProviderImpl implements BookInfoProvider {
     return bookBriefs;
   }
 
+  @Override
+  public List<BookBrief> getBooksBySubCate(int subCateId, int offset, int num) {
+    return bookInfoMapper.getCategoryBriefBooks((byte) 2, subCateId, offset, num);
+  }
+
   /* 其中一个实现思路是直接在一个sql中查询出所有的信息(目前的视线较为复杂，且有临时表)
   *  另一个思路是先查询出作者的基本信息，再查询出作者的书籍信息，然后组合在一起
   *  测试下来，第二种思路的性能更好，因此采用第二种思路
