@@ -110,6 +110,11 @@ container:
       book-part-suffix: book
       max_capacity: 1000
       cache-author-books-num: 20
+    author_cache:
+      hash-cont-name: elib:hash:author-info
+      zset-cont-name: elib:zset:author-visit
+      author-book-list-prefix: elib:list:author_book
+      max_capacity: 5000
     hit-cate:
       hit-sub-cate-zset: elib:zset:hit_sub_cate
 #    topics:
@@ -137,6 +142,8 @@ path:
     - /api/user/book_info/info_one_isbn
     - /api/user/announ
     - /api/user/book_cate
+    - /api/user/author_info
+    - /api/user/search
 
 sys_setting:
   bookshelf:

@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @NoArgsConstructor
 @Setter
 @Getter
-@Document(indexName = "author")
+//@Document(indexName = "author")
 public class SearchedAuthor {
 
   @JsonProperty("author_id")

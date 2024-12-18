@@ -17,9 +17,13 @@ import java.util.Map;
 public class AuthorWithBookLis implements Cloneable{
   @JsonIgnore
   int authorId;
-  @JsonProperty("author_id")
+
   Author author;
+
   List<BookBrief> books;
+
+  @JsonIgnore
+  boolean urlSet = false;
 
   public Map<String, Object> toMap() {
     Map<String, Object> map = new HashMap<>();
@@ -28,15 +32,21 @@ public class AuthorWithBookLis implements Cloneable{
     return map;
   }
 
-  public static AuthorWithBookLis from(Author author, List<BookBrief> books) {
-    return new AuthorWithBookLis(author.getAuthorId(), author, books);
-  }
-
   @SneakyThrows
   public AuthorWithBookLis clone(){
-    AuthorWithBookLis cloned = new AuthorWithBookLis(authorId, author, null);
+    AuthorWithBookLis cloned = new AuthorWithBookLis(authorId, author, null, urlSet);
     List<BookBrief> books = this.books.stream().map(BookBrief::clone).toList();
     cloned.setBooks(books);
     return cloned;
+  }
+
+  public AuthorWithBookLis cloneWithNewBooks(List<BookBrief> books){
+    return new AuthorWithBookLis(authorId, author, books, urlSet);
+  }
+
+  public void buildUrl() {
+    if (urlSet) return;
+    books.forEach(BookBrief::buildUrl);
+    urlSet = true;
   }
 }

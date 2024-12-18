@@ -3,6 +3,7 @@ import com.leo.elib.entity.SearchedPublisher;
 import com.leo.elib.entity.dto.dao.Author;
 import com.leo.elib.entity.SearchedAuthor;
 import com.leo.elib.entity.SearchedBook;
+import com.leo.elib.entity.dto.dao.Publisher;
 import com.leo.elib.entity.elastic.BookDetailedInfo;
 import com.leo.elib.usecase.inter.search.SearchUsecase;
 import jakarta.annotation.Resource;
@@ -120,7 +121,7 @@ public class SearchUsecaseImpl implements SearchUsecase {
       pageSize,
       publisherIndexName,
       false,
-      List.of("name"),
+      Publisher.worthSearchFriendlyFields,
       wantedPublisherFields,
       SearchedPublisher.class
     );

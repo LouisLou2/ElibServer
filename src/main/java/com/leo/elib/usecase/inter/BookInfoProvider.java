@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface BookInfoProvider {
   BookInfo getBookInfo(String isbn,int relatedBookNum);
-  AuthorWithBookLis getAuthorWithBooks(int authorId, int num);
-  List<BookBrief> getBooksByAuthor(int authorId, int offset, int num);
+  // AuthorWithBookLis getAuthorWithBooks(int authorId, int num);
+  // List<BookBrief> getBooksByAuthor(int authorId, int offset, int num);
   List<BookBrief> getRecoBooks(int userId, int offset, int num);
   List<BookBrief> getBooksBySubCate(int subCateId, int offset, int num);
 
